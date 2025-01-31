@@ -142,7 +142,8 @@ def call_api_route():
                     'acces_metier': "Non disponible",  # Valeur par défaut
                     'description': "Non disponible",  # Valeur par défaut
                     'competences': "Non disponible",  # Valeur par défaut
-                }
+                    'formations': []  # Ajout d'une clé pour les formations
+                    }
 
                 # Si des résultats ont été trouvés dans Supabase
                 if supabase_results:
@@ -153,7 +154,7 @@ def call_api_route():
                     metier_data['acces_metier'] = supabase_result.get('acces_metier', "Non disponible")
                     metier_data['accroche_metier'] = supabase_result.get('accroche_metier', "Non disponible")
                     metier_data['competences'] = supabase_result.get('competences', "Non disponible")
-
+                    metier_data['formations'] = supabase_result.get('formations_min_requise_id', "Non disponible")
 
                 # Ajoute le métier avec les informations fusionnées
                 metiers.append(metier_data)

@@ -34,7 +34,8 @@
           <div v-if="metier.showDetails" class="metier-details">
             <p><strong>Description :</strong> {{ metier.accroche_metier }}</p>
             <p><strong>Informations :</strong> {{ metier.acces_metier }}</p>
-            <p><strong>Compétence :</strong> {{ metier.competences }}</p>
+            <p><strong>Compétences :</strong> {{ metier.competences }}</p>
+            <p><strong>Formations :</strong> {{ metier.formations }}</p>
           </div>
         </li>
       </ul>
