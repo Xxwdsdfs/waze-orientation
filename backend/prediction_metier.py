@@ -1,44 +1,45 @@
 import requests
 
+def get_predicted_metiers(action, token):
+
 # URL de l'API pour faire une prédiction
-url = "https://api.francetravail.io/partenaire/romeo/v2/predictionMetiers"
-
-# Token d'accès (remplacez par votre token obtenu)
-access_token = "aHO72UnDG6rL-WCFRqUdwvcwD80"
-
-# Données à envoyer dans le corps de la requête
-payload = {
-    "appellations": [
-        {
-            "intitule": "Boucher",
-            "identifiant": "123456",
-            "contexte": "Commerce de détail de viandes et de produits à base de viande en magasin spécialisé"
-        }
-    ],
-    "options": {
-        "nomAppelant": "francetravail",
-        "nbResultats": 2,
-        "seuilScorePrediction": 0.7
-    }
-}
-
-# En-têtes de la requête
-headers = {
-    "Authorization": f"Bearer {access_token}",
-    "Content-Type": "application/json",
-    "Accept": "application/json"
-}
-
-try:
-    # Envoi de la requête POST
-    response = requests.post(url, json=payload, headers=headers)
+    url = "https://api.francetravail.io/partenaire/romeo/v2/predictionMetiers"
     
-    # Vérification de la réponse
-    if response.status_code == 200:
-        print("Réponse de l'API :", response.json())
-    else:
-        print(f"Erreur : {response.status_code}")
-        print("Détails de l'erreur :", response.json())
+    # Données à envoyer dans la requête
+    payload = {
+        "appellations": [
+            {
+                "intitule": action,  # Utilisation de l'action de l'utilisateur
+                "identifiant": "123456",
+                "contexte": "Contexte généralisé"
+            }
+        ],
+        "options": {
+            "nomAppelant": "francetravail",
+            "nbResultats": 3,  # Nombre de résultats à renvoyer
+            "seuilScorePrediction": 0.7  # Seuil de confiance
+        }
+    }
 
-except Exception as e:
-    print("Une erreur s'est produite :", str(e))
+    # En-têtes de la requête
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+
+    try:
+        # Envoi de la requête POST
+        response = requests.post(url, json=payload, headers=headers)
+
+        # Vérification de la réponse
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"Erreur : {response.status_code}")
+            print("Détails de l'erreur :", response.json())
+            return None
+
+    except Exception as e:
+        print("Une erreur s'est produite :", str(e))
+        return None

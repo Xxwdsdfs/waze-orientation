@@ -1,10 +1,13 @@
 from create_token import generate_token
+from prediction_metier import get_predicted_metiers
 from prediction_competence import search_competence
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)  # Active CORS pour toutes les routes
+
 @app.route('/search', methods=['POST'])
 def search():
     # Récupérer l'action depuis la requête
@@ -31,6 +34,19 @@ def search():
         return jsonify(resultat)
     else:
         return jsonify({"error": "Échec de la recherche des compétences"}), 500
+
+# Nouvelle route pour la prédiction des métiers
+@app.route('/predict_metier', methods=['POST'])
+def predict_metier():
+    data = request.get_json()
+    action = data.get("action")
+
+    if not action:
+        return jsonify({"error": "Action manquante"}), 400
+
+    result = get_predicted_metiers(action)  # Appel de la fonction existante
+
+    return jsonify(result)  # Retourne le résultat
 
 if __name__ == "__main__":
     app.run(debug=True)
