@@ -1,6 +1,40 @@
 <template>
+      <!-- Bouton pour ouvrir la pop-up d'authentification -->
+      <button class="auth-button" @click="showAuthModal = true">
+      {{ user ? "👤 " + user.email : "Se connecter" }}
+    </button>
+
+    <!-- Fenêtre modale pour l'authentification -->
+    <div v-if="showAuthModal" class="auth-modal">
+      <div class="auth-modal-content">
+        <button class="close-btn" @click="showAuthModal = false">✖</button>
+
+        <h3 v-if="!user">Connexion / Inscription</h3>
+        <h3 v-else>Bienvenue, {{ user.email }} !</h3>
+
+        <div v-if="!user">
+          <form @submit.prevent="isSignUp ? signUp() : signIn()">
+            <input type="email" v-model="email" placeholder="Email" required />
+            <input type="password" v-model="password" placeholder="Mot de passe" required />
+            <button type="submit">{{ isSignUp ? "S'inscrire" : "Se connecter" }}</button>
+          </form>
+
+          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+
+          <p @click="isSignUp = !isSignUp" class="switch-auth">
+            {{ isSignUp ? "Déjà un compte ? Se connecter" : "Pas encore de compte ? S'inscrire" }}
+          </p>
+        </div>
+
+        <div v-else>
+          <button @click="signOut">Se déconnecter</button>
+        </div>
+      </div>
+    </div>
   <div class="home-container">
+
     <h1 class="title">Recherche de Métiers</h1>
+
     <div class="form-container">
       <form @submit.prevent="handleSubmit">
         <div class="input-group">
@@ -16,15 +50,11 @@
     </div>
 
     <div v-if="error" class="error">{{ error }}</div>
-    
+
     <div v-if="results.length > 0">
       <transition name="fade">
         <div class="overlay" v-if="showPopup">
-          <div 
-            class="popup"
-            @mousedown="startDrag"
-            @touchstart="startDrag"
-          >
+          <div class="popup" @mousedown="startDrag" @touchstart="startDrag">
             <button class="close-btn" @click="showPopup = false">✖</button>
             <h2>{{ results[currentIndex].libelleAppellation }} ({{ results[currentIndex].codeRome }})</h2>
             <p><strong>Description :</strong> {{ truncateText(results[currentIndex].accroche_metier, 150) }}</p>
@@ -37,17 +67,16 @@
                 </router-link>
               </li>
             </ul>
-            <button class="like-button">
-              ❤️ J'aime
-            </button>
+            <button class="like-button">❤️ J'aime</button>
           </div>
         </div>
       </transition>
     </div>
-    
+
     <router-view></router-view>
+
     <button class="chat-button" @click="showChat = !showChat">💬</button>
-    
+
     <div v-if="showChat" class="chat-window">
       <div class="chat-header">
         <span>Chatbot</span>
@@ -69,10 +98,11 @@
 
 <script>
 import { ref, onMounted, nextTick } from "vue";
+import { supabase } from "../supabase";
 
 export default {
   setup() {
-    // Variables pour la recherche de métiers
+    // 🔷 Variables de recherche de métiers
     const intitule = ref('');
     const contexte = ref('');
     const results = ref([]);
@@ -80,20 +110,27 @@ export default {
     const currentIndex = ref(0);
     const showPopup = ref(false);
 
-
-    // Variables pour le chat
+    // 🔷 Variables pour le chat
     const showChat = ref(false);
     const chatInput = ref("");
     const messages = ref([]);
 
-    // Variables pour le swipe
+    // 🔷 Variables pour le swipe
     const animating = ref(false);
     const decisionVal = 80;
     const pullDeltaX = ref(0);
     const deg = ref(0);
     let card;
 
-    // Fonction pour gérer la soumission du formulaire
+    // 🔷 Variables d'authentification
+    const email = ref("");
+    const password = ref("");
+    const user = ref(null);
+    const errorMessage = ref("");
+    const showAuthModal = ref(false);
+    const isSignUp = ref(false);
+
+    // 🟢 Fonction pour gérer la soumission du formulaire
     const handleSubmit = async () => {
       error.value = null;
       results.value = [];
@@ -123,11 +160,13 @@ export default {
       }
     };
 
+    // 🟢 Fonction pour tronquer le texte
     const truncateText = (text, length) => {
       if (!text) return 'Non disponible';
       return text.length > length ? text.substring(0, length) + '...' : text;
     };
 
+    // 🔵 Fonctions de navigation entre résultats
     const nextResult = async () => {
       if (currentIndex.value < results.value.length - 1) {
         card.style.transition = "transform 0.3s ease-out, opacity 0.3s ease-out";
@@ -152,7 +191,7 @@ export default {
       }
     };
 
-    // Fonctions pour le swipe
+    // 🔵 Fonction pour gérer le swipe
     function pullChange() {
       animating.value = true;
       deg.value = pullDeltaX.value / 10;
@@ -228,13 +267,61 @@ export default {
       });
     });
 
-        // Fonction pour envoyer un message
-      const sendMessage = () => {
-        if (chatInput.value.trim() !== "") {
-          messages.value.push({ text: chatInput.value, sender: "user" });
-          chatInput.value = ""; // Vider le champ de texte après envoi
-        }
-      };
+    // 🟢 Fonction pour envoyer un message dans le chat
+    const sendMessage = () => {
+      if (chatInput.value.trim() !== "") {
+        messages.value.push({ text: chatInput.value, sender: "user" });
+        chatInput.value = ""; // Vider le champ de texte après envoi
+      }
+    };
+
+    // Vérifier si un utilisateur est connecté au chargement de l'application
+    onMounted(async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (session && session.user) {
+        user.value = session.user;
+      }
+
+      // Écoute les changements de session (connexion/déconnexion)
+      supabase.auth.onAuthStateChange((event, session) => {
+        user.value = session ? session.user : null;
+      });
+    });
+
+
+    // 🟠 Authentification avec Supabase
+    const signUp = async () => {
+      errorMessage.value = "";
+      const { data, error } = await supabase.auth.signUp({
+        email: email.value,
+        password: password.value,
+      });
+
+      if (error) {
+        errorMessage.value = error.message;
+      } else {
+        user.value = data.user;
+      }
+    };
+
+    const signIn = async () => {
+      errorMessage.value = "";
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.value,
+        password: password.value,
+      });
+
+      if (error) {
+        errorMessage.value = error.message;
+      } else {
+        user.value = data.user;
+      }
+    };
+
+    const signOut = async () => {
+      await supabase.auth.signOut();
+      user.value = null;
+    };
 
     return {
       intitule,
@@ -252,6 +339,15 @@ export default {
       chatInput,
       messages,
       sendMessage,
+      email,
+      password,
+      user,
+      errorMessage,
+      showAuthModal,
+      isSignUp,
+      signUp,
+      signIn,
+      signOut
     };
   },
 };
@@ -503,4 +599,49 @@ input {
   font-size: 1.2em;
   cursor: pointer;
 }
+.auth-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #e59400;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 1em;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.auth-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-modal-content {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 10px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  color: white;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
 </style>
