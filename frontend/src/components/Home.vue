@@ -20,7 +20,11 @@
     <div v-if="results.length > 0">
       <transition name="fade">
         <div class="overlay" v-if="showPopup">
-          <div class="popup">
+          <div 
+            class="popup"
+            @mousedown="startDrag"
+            @touchstart="startDrag"
+          >
             <button class="close-btn" @click="showPopup = false">✖</button>
             <h2>{{ results[currentIndex].libelleAppellation }} ({{ results[currentIndex].codeRome }})</h2>
             <p><strong>Description :</strong> {{ truncateText(results[currentIndex].accroche_metier, 150) }}</p>
@@ -33,24 +37,42 @@
                 </router-link>
               </li>
             </ul>
-            <div class="swipe-buttons">
-              <button @click="prevResult">⏪ Précédent</button>
-              <button @click="nextResult">Suivant ⏩</button>
-            </div>
+            <button class="like-button">
+              ❤️ J'aime
+            </button>
           </div>
         </div>
       </transition>
     </div>
     
     <router-view></router-view>
+    <button class="chat-button" @click="showChat = !showChat">💬</button>
+    
+    <div v-if="showChat" class="chat-window">
+      <div class="chat-header">
+        <span>Chatbot</span>
+        <button class="close-chat" @click="showChat = false">✖</button>
+      </div>
+      <div class="chat-body">
+        <div v-for="(msg, index) in messages" :key="index" class="chat-message">
+          <span class="user-message">{{ msg.text }}</span>
+        </div>
+      </div>
+      <div class="chat-input">
+        <input type="text" v-model="chatInput" @keyup.enter="sendMessage" placeholder="Écrivez un message..." />
+        <button @click="sendMessage">➤</button>
+      </div>
+    </div>
   </div>
 </template>
 
+
 <script>
-import { ref } from 'vue';
+import { ref, onMounted, nextTick } from "vue";
 
 export default {
   setup() {
+    // Variables pour la recherche de métiers
     const intitule = ref('');
     const contexte = ref('');
     const results = ref([]);
@@ -58,6 +80,20 @@ export default {
     const currentIndex = ref(0);
     const showPopup = ref(false);
 
+
+    // Variables pour le chat
+    const showChat = ref(false);
+    const chatInput = ref("");
+    const messages = ref([]);
+
+    // Variables pour le swipe
+    const animating = ref(false);
+    const decisionVal = 80;
+    const pullDeltaX = ref(0);
+    const deg = ref(0);
+    let card;
+
+    // Fonction pour gérer la soumission du formulaire
     const handleSubmit = async () => {
       error.value = null;
       results.value = [];
@@ -80,10 +116,7 @@ export default {
         }
 
         const data = await response.json();
-        results.value = data.map(metier => ({
-          ...metier,
-          showDetails: false,
-        }));
+        results.value = data;
         showPopup.value = true;
       } catch (err) {
         error.value = err.message;
@@ -95,17 +128,113 @@ export default {
       return text.length > length ? text.substring(0, length) + '...' : text;
     };
 
-    const nextResult = () => {
+    const nextResult = async () => {
       if (currentIndex.value < results.value.length - 1) {
+        card.style.transition = "transform 0.3s ease-out, opacity 0.3s ease-out";
+        card.style.transform = "translateX(100vw) rotate(30deg)";
+        card.style.opacity = "0";
+        await new Promise(resolve => setTimeout(resolve, 300));
         currentIndex.value++;
+        await nextTick();
+        resetCardPosition();
       }
     };
 
-    const prevResult = () => {
+    const prevResult = async () => {
       if (currentIndex.value > 0) {
+        card.style.transition = "transform 0.3s ease-out, opacity 0.3s ease-out";
+        card.style.transform = "translateX(-100vw) rotate(-30deg)";
+        card.style.opacity = "0";
+        await new Promise(resolve => setTimeout(resolve, 300));
         currentIndex.value--;
+        await nextTick();
+        resetCardPosition();
       }
     };
+
+    // Fonctions pour le swipe
+    function pullChange() {
+      animating.value = true;
+      deg.value = pullDeltaX.value / 10;
+      card.style.transform = `translateX(${pullDeltaX.value}px) rotate(${deg.value}deg)`;
+    }
+
+    function release() {
+      if (pullDeltaX.value >= decisionVal) {
+        nextResult();
+      } else if (pullDeltaX.value <= -decisionVal) {
+        prevResult();
+      } else {
+        resetCardPosition();
+      }
+      pullDeltaX.value = 0;
+      animating.value = false;
+    }
+
+    function resetCardPosition() {
+      if (card) {
+        card.style.transition = "transform 0.3s ease-out, opacity 0.3s ease-out";
+        card.style.transform = "translateX(0) rotate(0)";
+        card.style.opacity = "1";
+        setTimeout(() => {
+          card.style.transition = "";
+        }, 300);
+      }
+    }
+
+    function startDrag(event) {
+      if (animating.value) return;
+
+      card = event.currentTarget;
+      card.style.zIndex = "2";
+      const nextCard = document.querySelectorAll(".popup")[currentIndex.value + 1];
+      if (nextCard) {
+        nextCard.style.zIndex = "1";
+        nextCard.style.opacity = "0.5";
+        nextCard.style.transform = "scale(0.95)";
+      }
+      
+      const startX = event.pageX || event.touches[0].pageX;
+
+      function onMove(e) {
+        const x = e.pageX || e.touches[0].pageX;
+        pullDeltaX.value = x - startX;
+        pullChange();
+      }
+
+      function onEnd() {
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onEnd);
+        document.removeEventListener("touchmove", onMove);
+        document.removeEventListener("touchend", onEnd);
+        release();
+      }
+
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onEnd);
+      document.addEventListener("touchmove", onMove);
+      document.addEventListener("touchend", onEnd);
+    }
+
+    onMounted(() => {
+      document.querySelectorAll(".popup").forEach((el, index) => {
+        el.style.zIndex = `${results.value.length - index}`;
+        el.style.position = "absolute";
+        el.style.top = "0";
+        el.style.left = "50%";
+        el.style.transform = "translateX(-50%) scale(1)";
+        el.addEventListener("mousedown", startDrag);
+        el.addEventListener("touchstart", startDrag);
+      });
+    });
+
+        // Fonction pour envoyer un message
+      const sendMessage = () => {
+        if (chatInput.value.trim() !== "") {
+          messages.value.push({ text: chatInput.value, sender: "user" });
+          chatInput.value = ""; // Vider le champ de texte après envoi
+        }
+      };
 
     return {
       intitule,
@@ -118,13 +247,32 @@ export default {
       prevResult,
       showPopup,
       truncateText,
+      startDrag,
+      showChat,
+      chatInput,
+      messages,
+      sendMessage,
     };
   },
 };
 </script>
 
 
-<style scoped>
+<style lang="scss" scoped>
+*, *:before, *:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-size: 62.5%;
+}
+body {
+  background: #63BDF7;
+  overflow: hidden;
+}
+
 .home-container {
   max-width: 800px;
   margin: 0 auto;
@@ -198,6 +346,8 @@ input {
   width: 80%;
   text-align: center;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease-out;
+  cursor: grab;
 }
 
 .close-btn {
@@ -211,22 +361,146 @@ input {
   right: 20px;
 }
 
-.swipe-buttons {
-  margin-top: 15px;
-  display: flex;
-  justify-content: space-between;
+.demo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 30.6rem;
+  height: 54rem;
+  margin-left: calc(30.6rem / -2);
+  margin-top: calc(54rem / -2);
+  background: #F6F6F5;
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.2);
+  
+  &__card {
+    z-index: 2;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    transform-origin: 50% 100%;
+    transition: transform 0.3s ease-out;
+    
+    &.to-left {
+      transform: translateX(-30rem) rotate(-30deg) !important;
+    }
+    
+    &.to-right {
+      transform: translate(30rem) rotate(30deg) !important;
+    }
+  }
+  
+  &__drag {
+    z-index: 5;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+  }
 }
-
-.swipe-buttons button {
-  background: #f5a623;
+.like-button {
+  background: #ff4d4d;
   color: white;
   border: none;
   padding: 10px 15px;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
 }
 
-.swipe-buttons button:hover {
+.like-button:hover {
+  background: #cc0000;
+}
+
+.chat-button {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
   background: #e59400;
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.5em;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.chat-button:hover {
+  background: #0056b3;
+}
+
+.chat-window {
+  position: fixed;
+  bottom: 80px;
+  left: 20px;
+  width: 300px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.chat-header {
+  background: #e59400;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.chat-body {
+  padding: 10px;
+  height: 200px;
+  overflow-y: auto;
+}
+
+
+.chat-input {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+}
+
+.chat-input button {
+  background: #e59400;
+  color: white;
+  border: none;
+  padding: 8px 10px;
+  cursor: pointer;
+  margin-left: 5px;
+  border-radius: 5px;
+}
+
+.chat-message {
+  background: #e1f5fe;
+  padding: 8px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  color: rgba(0, 0, 0);
+}
+
+.close-chat {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2em;
+  cursor: pointer;
 }
 </style>
