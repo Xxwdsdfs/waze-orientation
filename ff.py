@@ -109,6 +109,22 @@ def query_supabase(codeRome):
         print(f"Erreur lors de l'interrogation de Supabase : {e}")
         return []
 
+
+@app.route('/formation/<code_for>', methods=['GET'])
+def get_formation_details(code_for):
+    """Récupère les détails d'une formation spécifique depuis Supabase."""
+    try:
+        # Requête pour récupérer la formation par son identifiant (code_for)
+        response = supabase.table('formations_id').select('*').eq('identifiant', code_for).execute()
+
+        # Vérifier si on a trouvé la formation
+        if response.data:
+            return jsonify(response.data[0])  # Retourne les données de la première formation trouvée
+        else:
+            return jsonify({"error": "Formation non trouvée"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # Route Flask pour l'API
 @app.route('/call_api', methods=['POST'])
 def call_api_route():
@@ -154,7 +170,20 @@ def call_api_route():
                     metier_data['acces_metier'] = supabase_result.get('acces_metier', "Non disponible")
                     metier_data['accroche_metier'] = supabase_result.get('accroche_metier', "Non disponible")
                     metier_data['competences'] = supabase_result.get('competences', "Non disponible")
-                    metier_data['formations'] = supabase_result.get('formations_min_requise_id', "Non disponible")
+                    formations_ids = supabase_result.get('formations_min_requise_id', 'N/A')
+                    formations_libs = supabase_result.get('formations_min_requise_libelle', 'Non disponible')
+
+                    # Si les valeurs sont des chaînes séparées par des virgules, on les transforme en listes
+                    if isinstance(formations_ids, str):
+                        formations_ids = formations_ids.split(", ")  # Séparer par ", " ou ","
+                    if isinstance(formations_libs, str):
+                        formations_libs = formations_libs.split(", ")
+
+                    # Vérifier que les deux listes sont bien de la même longueur
+                    if len(formations_ids) == len(formations_libs):
+                        metier_data['formations'] = [f"{code} : {libelle}" for code, libelle in zip(formations_ids, formations_libs)]
+                    else:
+                        metier_data['formations'] = ["Aucune formation disponible"]
 
                 # Ajoute le métier avec les informations fusionnées
                 metiers.append(metier_data)
