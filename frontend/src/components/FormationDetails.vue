@@ -46,15 +46,25 @@
 
   <!-- ✅ Ajout de l'affichage des écoles associées -->
   <div v-if="ecoles.length > 0" class="ecoles-section">
-    <h3>Écoles associées</h3>
-    <div class="ecoles-container">
-      <div v-for="ecole in ecoles" :key="ecole.id" class="ecole-card">
-        <h4>{{ ecole['Lieu d\'enseignement (ENS) libellé'] }}</h4>
-        <p><strong>Statut :</strong> {{ ecole['ENS statut'] }}</p>
-        <p><strong>Adresse :</strong> {{ ecole['ENS adresse'] }}</p>
-      </div>
+  <h3>Écoles associées</h3>
+  <div class="ecoles-container">
+    <div v-for="ecole in ecoles" :key="ecole.id" class="ecole-card">
+      <h4>🏫 {{ ecole["Lieu d'enseignement (ENS) libellé"] }}</h4>
+      <p><strong>📍 Adresse :</strong> {{ ecole["ENS adresse"] || "Non renseignée" }}</p>
+      <p><strong>📜 Statut :</strong> {{ ecole["ENS statut"] || "Non renseigné" }}</p>
+      <p><strong>♿ Accessibilité :</strong> {{ ecole["ENS accessibilité"] || "Non renseignée" }}</p>
+      <p><strong>📚 Modalité :</strong> {{ ecole["AF modalités scolarité"] || "Non renseignée" }}</p>
+      <p><strong>💰 Coût :</strong> {{ ecole["AF coût scolarité"] || "Non renseigné" }}</p>
+      <p>
+        <strong>🔗 Lien :</strong> 
+        <a :href="ecole['ENS site web']" target="_blank">
+          Voir l'établissement
+        </a>
+      </p>
     </div>
   </div>
+</div>
+
 </template>
 
 <script>
