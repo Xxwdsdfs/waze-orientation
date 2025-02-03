@@ -46,7 +46,11 @@
 
   <!-- ✅ Ajout de l'affichage des écoles associées -->
   <div v-if="ecoles.length > 0" class="ecoles-section">
-  <h3>Écoles associées</h3>
+  <div class="ecoles-header">
+    <h3>Écoles associées</h3>
+    <button @click="toggleMap" class="map-button">📍 Voir la carte</button>
+  </div>
+
   <div class="ecoles-container">
     <div v-for="ecole in ecoles" :key="ecole.id" class="ecole-card">
       <h4>🏫 {{ ecole["Lieu d'enseignement (ENS) libellé"] }}</h4>
@@ -63,22 +67,31 @@
       </p>
     </div>
   </div>
+    <!-- ✅ Carte masquée par défaut, s'affiche après clic -->
+    <div v-if="showMap" class="map-section">
+    <h3>📍 Localisation des établissements</h3>
+    <div id="map"></div>
+  </div>
 </div>
+
 
 </template>
 
 <script>
 import { ref, onMounted } from "vue";
 import { supabase } from "../supabase";
+import L from "leaflet";
 
 export default {
   data() {
     return {
       formation: null,
-      ecoles: [], // Stocker les écoles associées
+      ecoles: [],
       loading: false,
       error: null,
       errorMessage: null,
+      showMap: false, // ✅ Suivi de l'affichage de la carte
+      map: null,
     };
   },
   async created() {
@@ -140,10 +153,47 @@ export default {
         console.error("❌ Erreur :", err);
         this.errorMessage = "Impossible de charger les écoles.";
       }
+    },
+
+    // ✅ Afficher/Masquer la carte et initialiser Leaflet
+    toggleMap() {
+      this.showMap = !this.showMap;
+
+      if (this.showMap && !this.map) {
+        this.initMap();
+      }
+    },
+
+    // 🌍 Initialisation de la carte Leaflet avec les écoles
+    initMap() {
+      if (!this.ecoles.length) return;
+
+      // Supprime la carte existante si déjà initialisée
+      if (this.map) {
+        this.map.remove();
+      }
+
+      const firstEcole = this.ecoles[0];
+      const center = [parseFloat(firstEcole["ENS latitude"]), parseFloat(firstEcole["ENS longitude"])];
+
+      this.map = L.map("map").setView(center, 10);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; OpenStreetMap',
+      }).addTo(this.map);
+
+      // Ajout des marqueurs pour chaque école
+      this.ecoles.forEach(ecole => {
+        if (ecole["ENS latitude"] && ecole["ENS longitude"]) {
+          const marker = L.marker([parseFloat(ecole["ENS latitude"]), parseFloat(ecole["ENS longitude"])]).addTo(this.map);
+          marker.bindPopup(`<strong>${ecole["Lieu d'enseignement (ENS) libellé"]}</strong><br>${ecole["ENS adresse"]}`);
+        }
+      });
     }
   }
 };
 </script>
+
 
 
 <style scoped>
@@ -249,5 +299,41 @@ text-decoration: underline;
   font-size: 0.9em;
   color: #ddd;
 }
+.ecoles-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.map-button {
+  background: #f5a623;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.map-button:hover {
+  background: #d48400;
+}
+
+.map-section {
+  max-width: 90%;
+  margin: 20px auto;
+  padding: 15px;
+  background: #2e2e2e;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+#map {
+  width: 100%;
+  height: 300px;
+  border-radius: 8px;
+}
+
 
 </style>
