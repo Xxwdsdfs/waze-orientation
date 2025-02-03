@@ -1,38 +1,38 @@
 <template>
-      <!-- Bouton pour ouvrir la pop-up d'authentification -->
-      <button class="auth-button" @click="showAuthModal = true">
-      {{ user ? "👤 " + user.email : "Se connecter" }}
-    </button>
+  <!-- Bouton pour ouvrir la pop-up d'authentification -->
+  <button class="auth-button" @click="showAuthModal = true">
+    {{ user ? "👤 " + user.email : "Se connecter" }}
+  </button>
 
-    <!-- Fenêtre modale pour l'authentification -->
-    <div v-if="showAuthModal" class="auth-modal">
-      <div class="auth-modal-content">
-        <button class="close-btn" @click="showAuthModal = false">✖</button>
+  <!-- Fenêtre modale pour l'authentification -->
+  <div v-if="showAuthModal" class="auth-modal">
+    <div class="auth-modal-content">
+      <button class="close-btn" @click="showAuthModal = false">✖</button>
 
-        <h3 v-if="!user">Connexion / Inscription</h3>
-        <h3 v-else>Bienvenue, {{ user.email }} !</h3>
+      <h3 v-if="!user">Connexion / Inscription</h3>
+      <h3 v-else>Bienvenue, {{ user.email }} !</h3>
 
-        <div v-if="!user">
-          <form @submit.prevent="isSignUp ? signUp() : signIn()">
-            <input type="email" v-model="email" placeholder="Email" required />
-            <input type="password" v-model="password" placeholder="Mot de passe" required />
-            <button type="submit">{{ isSignUp ? "S'inscrire" : "Se connecter" }}</button>
-          </form>
+      <div v-if="!user">
+        <form @submit.prevent="isSignUp ? signUp() : signIn()">
+          <input type="email" v-model="email" placeholder="Email" required />
+          <input type="password" v-model="password" placeholder="Mot de passe" required />
+          <button type="submit">{{ isSignUp ? "S'inscrire" : "Se connecter" }}</button>
+        </form>
 
-          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
-          <p @click="isSignUp = !isSignUp" class="switch-auth">
-            {{ isSignUp ? "Déjà un compte ? Se connecter" : "Pas encore de compte ? S'inscrire" }}
-          </p>
-        </div>
+        <p @click="isSignUp = !isSignUp" class="switch-auth">
+          {{ isSignUp ? "Déjà un compte ? Se connecter" : "Pas encore de compte ? S'inscrire" }}
+        </p>
+      </div>
 
-        <div v-else>
-          <button @click="signOut">Se déconnecter</button>
-        </div>
+      <div v-else>
+        <button @click="signOut">Se déconnecter</button>
       </div>
     </div>
-  <div class="home-container">
+  </div>
 
+  <div class="home-container">
     <h1 class="title">Recherche de Métiers</h1>
 
     <div class="form-container">
@@ -54,20 +54,49 @@
     <div v-if="results.length > 0">
       <transition name="fade">
         <div class="overlay" v-if="showPopup">
-          <div class="popup" @mousedown="startDrag" @touchstart="startDrag">
+          <div class="popup" 
+               :class="{ fullscreen: showDetails }"
+               @mousedown="startDrag" 
+               @touchstart="startDrag">
             <button class="close-btn" @click="showPopup = false">✖</button>
-            <h2>{{ results[currentIndex].libelleAppellation }} ({{ results[currentIndex].codeRome }})</h2>
-            <p><strong>Description :</strong> {{ truncateText(results[currentIndex].accroche_metier, 150) }}</p>
-            <p><strong>Informations :</strong> {{ truncateText(results[currentIndex].acces_metier, 100) }}</p>
-            <p><strong>Compétences :</strong> {{ truncateText(results[currentIndex].competences, 100) }}</p>
-            <ul v-if="results[currentIndex].formations.length">
-              <li v-for="formation in results[currentIndex].formations" :key="formation">
-                <router-link :to="'/formation/' + formation.split(':')[0].replace(/[\[\]']/g, '').trim()">
-                  {{ formation.replace(/[\[\]']/g, '') }}
-                </router-link>
-              </li>
-            </ul>
-            <button class="like-button">❤️ J'aime</button>
+
+            <!-- Nom du métier -->
+            <h2>{{ results[currentIndex].libelleAppellation }}</h2>
+
+            <!-- Image du métier (masquée si détails affichés) -->
+            <div class="image-container" v-if="!showDetails">
+              <img v-if="imageUrl" :src="imageUrl" alt="Image du métier" class="job-image"/>
+              <div v-else class="placeholder-image">Image non trouvée</div>
+            </div>
+
+            <!-- Boutons -->
+            <div class="card-buttons">
+              <button class="like-button" @click="likeCard(results[currentIndex])">❤️ J'aime</button>
+              <button class="info-button" @click="toggleDetails">
+                ℹ️ {{ showDetails ? "Masquer" : "En savoir plus" }}
+              </button>
+            </div>
+
+            <!-- Détails affichés seulement si showDetails est true -->
+            <div v-if="showDetails" class="details-container">
+              <h3>Description</h3>
+              <p>{{ results[currentIndex].accroche_metier }}</p>
+
+              <h3>Informations</h3>
+              <p>{{ results[currentIndex].acces_metier }}</p>
+
+              <h3>Compétences</h3>
+              <p>{{ results[currentIndex].competences }}</p>
+
+              <h3>Formations</h3>
+              <ul v-if="results[currentIndex].formations.length">
+                <li v-for="formation in results[currentIndex].formations" :key="formation">
+                  <router-link :to="'/formation/' + formation.split(':')[0].trim()">
+                    {{ formation }}
+                  </router-link>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </transition>
@@ -95,7 +124,6 @@
   </div>
 </template>
 
-
 <script>
 import { ref, onMounted, nextTick } from "vue";
 import { supabase } from "../supabase";
@@ -109,6 +137,8 @@ export default {
     const error = ref(null);
     const currentIndex = ref(0);
     const showPopup = ref(false);
+    const showDetails = ref(false);
+
 
     // 🔷 Variables pour le chat
     const showChat = ref(false);
@@ -130,8 +160,39 @@ export default {
     const showAuthModal = ref(false);
     const isSignUp = ref(false);
 
-    // 🟢 Fonction pour gérer la soumission du formulaire
-    const handleSubmit = async () => {
+    // google moteur de recherche
+    const googleApiKey = "AIzaSyALaDmNqgh1pm9gh9RbIYPVO-mu5LK9GgE"; // 🔥 Remplace par ta clé API
+    const searchEngineId = "64a394dee20f849b9"; // 🔥 Ton ID de moteur de recherche
+    const imageUrl = ref(""); // Pour stocker l'image récupérée
+
+    const toggleDetails = () => {
+      showDetails.value = !showDetails.value;
+    };
+
+    const fetchImage = async (query) => {
+      try {
+        console.log("🔍 Recherche d'image pour :", query); // Ajoute ce log
+
+        const response = await fetch(
+          `https://www.googleapis.com/customsearch/v1?q=${query}&cx=${searchEngineId}&searchType=image&num=1&key=${googleApiKey}`
+        );
+        
+        const data = await response.json();
+        console.log("📸 Résultat API Google :", data); // Ajoute ce log
+
+        if (data.items && data.items.length > 0) {
+          imageUrl.value = data.items[0].link; // Stocke la première image trouvée
+          console.log("✅ Image trouvée :", imageUrl.value);
+        } else {
+          imageUrl.value = ""; // Aucun résultat trouvé
+          console.log("❌ Aucune image trouvée !");
+        }
+      } catch (error) {
+        console.error("❌ Erreur lors de la récupération de l'image :", error);
+        imageUrl.value = "";
+      }
+    };
+    const handleImage = async () => {
       error.value = null;
       results.value = [];
       currentIndex.value = 0;
@@ -155,10 +216,49 @@ export default {
         const data = await response.json();
         results.value = data;
         showPopup.value = true;
+
+        // 🔥 Ajoute cet appel pour récupérer l'image
+        await fetchImage(results.value[0].libelleAppellation);
       } catch (err) {
         error.value = err.message;
       }
     };
+
+
+    const handleSubmit = async () => {
+  error.value = null;
+  results.value = [];
+  currentIndex.value = 0;
+
+  try {
+    const response = await fetch('http://localhost:5000/call_api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        intitule: intitule.value,
+        contexte: contexte.value,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération des données');
+    }
+
+    const data = await response.json();
+    results.value = data;
+    showPopup.value = true;
+
+    // 🔥 Ajoute cet appel pour récupérer l'image immédiatement
+    if (results.value.length > 0) {
+      await fetchImage(results.value[0].libelleAppellation);
+    }
+  } catch (err) {
+    error.value = err.message;
+  }
+};
+
 
     // 🟢 Fonction pour tronquer le texte
     const truncateText = (text, length) => {
@@ -347,7 +447,12 @@ export default {
       isSignUp,
       signUp,
       signIn,
-      signOut
+      signOut,
+      imageUrl,
+      fetchImage,
+      handleImage,
+      showDetails, 
+      toggleDetails,
     };
   },
 };
@@ -439,12 +544,28 @@ input {
   background: #2e2e2e;
   padding: 20px;
   border-radius: 10px;
-  width: 80%;
+  width: 30%;
+  height: auto;
   text-align: center;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease-out;
+  transition: all 0.3s ease-in-out;
   cursor: grab;
+  position: relative;
 }
+
+/* Mode "plein écran" pour afficher les détails */
+.popup.fullscreen {
+  width: 70%; /* 🔥 Augmente la largeur */
+  height: 80vh; /* 🔥 Augmente en hauteur */
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 40px;
+}
+
+.image-container.hidden {
+  display: none; /* 🔥 Cache l'image */
+}
+
 
 .close-btn {
   background: none;
@@ -509,10 +630,6 @@ input {
   align-items: center;
   justify-content: center;
   margin-top: 10px;
-}
-
-.like-button:hover {
-  background: #cc0000;
 }
 
 .chat-button {
@@ -642,6 +759,76 @@ input {
   right: 10px;
   font-size: 1.2em;
   cursor: pointer;
+}
+.card-image {
+  width: 100%;
+  height: 250px;
+  background: #444;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+
+.card-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 50px;
+}
+.info-button {
+  background: #007bff;
+}
+
+.like-button:hover {
+  background: #cc0000;
+}
+
+.info-button:hover {
+  background: #0056b3;
+}
+
+/* Masquer l'image lorsqu'on affiche les détails */
+.image-container {
+  width: 100%;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-top: 30px;
+  background: #444;
+}
+
+
+.job-image {
+  width: 100%; /* Prend toute la largeur */
+  height: 100%; /* Prend toute la hauteur */
+  object-fit: cover; /* Ajuste l'image sans la déformer */
+  border-radius: 8px; /* Arrondi les bords */
+}
+
+.details-section {
+  margin-top: 15px;
+  padding: 10px;
+  background: #2e2e2e;
+  border-radius: 8px;
+  text-align: left;
+  color: white;
+}
+
+.details-section p {
+  margin: 5px 0;
+}
+
+.details-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.details-section li {
+  background: #444;
+  padding: 5px;
+  border-radius: 5px;
+  margin-top: 5px;
 }
 
 </style>
