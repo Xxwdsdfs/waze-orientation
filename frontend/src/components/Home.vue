@@ -80,7 +80,7 @@
 
             <!-- Boutons -->
             <div class="card-buttons">
-              <button class="like-button" @click="likeCard(results[currentIndex].codeRome)">
+              <button class="like-button" @click="likeCard(results[currentIndex])">
                 ❤️ J'aime
               </button>
               <button class="info-button" @click="toggleDetails">
@@ -186,7 +186,7 @@ export default {
       authMenuVisible.value = !authMenuVisible.value;
     };
 
-    const likeCard = async (jobId) => {
+    const likeCard = async (job) => {
       if (!user.value) {
         alert("Vous devez être connecté pour liker un métier.");
         return;
@@ -196,18 +196,28 @@ export default {
         const { data, error } = await supabase
           .from("liked_cards")
           .insert([
-            { user_id: user.value.id, job_id: jobId }
+            {
+              user_id: user.value.id,
+              job_id: job.codeRome, // Code métier ROME
+              libelleappellation: job.libelleAppellation,
+              accroche_metier: job.accroche_metier,
+              acces_metier: job.acces_metier,
+              centres_interet: job.centres_interet,
+              formations: job.formations, // Convertir en JSON
+              imageurl: imageUrl.value, // URL de l'image récupérée
+            },
           ]);
 
         if (error) {
-          console.error("Erreur lors du like :", error.message);
+          console.error("❌ Erreur lors du like :", error.message);
         } else {
-          console.log("Métier liké avec succès :", data);
+          console.log("✅ Métier liké avec succès :", data);
         }
       } catch (err) {
-        console.error("Erreur :", err);
+        console.error("❌ Erreur :", err);
       }
     };
+
 
     const fetchImage = async (query) => {
       try {
