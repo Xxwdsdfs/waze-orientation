@@ -1,8 +1,17 @@
 <template>
-  <!-- Bouton pour ouvrir la pop-up d'authentification -->
-  <button class="auth-button" @click="showAuthModal = true">
-    {{ user ? "👤 " + user.email : "Se connecter" }}
-  </button>
+  <!-- Bouton pour gérer l'authentification et le profil -->
+  <div class="auth-container">
+    <button class="auth-button" @click="toggleAuthMenu">
+      {{ user ? "👤 " + user.email : "Se connecter" }}
+    </button>
+
+    <!-- Menu déroulant affiché si authMenuVisible est true -->
+    <div v-if="authMenuVisible" class="auth-menu">
+      <router-link v-if="user" to="/profil" class="auth-menu-item">👤 Mon Profil</router-link>
+      <button v-if="user" class="auth-menu-item" @click="signOut">🚪 Se Déconnecter</button>
+      <button v-else class="auth-menu-item" @click="showAuthModal = true">🔑 Se Connecter</button>
+    </div>
+  </div>
 
   <!-- Fenêtre modale pour l'authentification -->
   <div v-if="showAuthModal" class="auth-modal">
@@ -71,7 +80,9 @@
 
             <!-- Boutons -->
             <div class="card-buttons">
-              <button class="like-button" @click="likeCard(results[currentIndex])">❤️ J'aime</button>
+              <button class="like-button" @click="likeCard(results[currentIndex].codeRome)">
+                ❤️ J'aime
+              </button>
               <button class="info-button" @click="toggleDetails">
                 ℹ️ {{ showDetails ? "Masquer" : "En savoir plus" }}
               </button>
@@ -124,6 +135,7 @@
   </div>
 </template>
 
+
 <script>
 import { ref, onMounted, nextTick } from "vue";
 import { supabase } from "../supabase";
@@ -159,6 +171,7 @@ export default {
     const errorMessage = ref("");
     const showAuthModal = ref(false);
     const isSignUp = ref(false);
+    const authMenuVisible = ref(false);
 
     // google moteur de recherche
     const googleApiKey = "AIzaSyALaDmNqgh1pm9gh9RbIYPVO-mu5LK9GgE"; // 🔥 Remplace par ta clé API
@@ -167,6 +180,33 @@ export default {
 
     const toggleDetails = () => {
       showDetails.value = !showDetails.value;
+    };
+
+    const toggleAuthMenu = () => {
+      authMenuVisible.value = !authMenuVisible.value;
+    };
+
+    const likeCard = async (jobId) => {
+      if (!user.value) {
+        alert("Vous devez être connecté pour liker un métier.");
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("liked_cards")
+          .insert([
+            { user_id: user.value.id, job_id: jobId }
+          ]);
+
+        if (error) {
+          console.error("Erreur lors du like :", error.message);
+        } else {
+          console.log("Métier liké avec succès :", data);
+        }
+      } catch (err) {
+        console.error("Erreur :", err);
+      }
     };
 
     const fetchImage = async (query) => {
@@ -453,6 +493,9 @@ export default {
       handleImage,
       showDetails, 
       toggleDetails,
+      toggleAuthMenu,
+      authMenuVisible,
+      likeCard,
     };
   },
 };
@@ -830,5 +873,76 @@ input {
   border-radius: 5px;
   margin-top: 5px;
 }
+.auth-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.auth-button {
+  background: #e59400;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 1em;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease-in-out;
+}
+
+.auth-button:hover {
+  background: #d48400;
+}
+
+.auth-menu {
+  position: absolute;
+  top: 110%; /* Ajustement pour éviter le chevauchement */
+  right: 0;
+  background: #d48400;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  padding: 5px 0;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  visibility: hidden;
+}
+
+.auth-container:hover .auth-menu {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.auth-menu-item {
+  padding: 12px 15px;
+  text-align: left;
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9em;
+  background: #d48400;
+  transition: background 0.2s ease-in-out;
+}
+
+.auth-menu-item:hover {
+  background: #d48400;
+}
+
+.auth-menu-item i {
+  font-size: 1.2em;
+}
+
 
 </style>
