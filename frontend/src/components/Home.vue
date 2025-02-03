@@ -97,13 +97,13 @@
               <p>{{ results[currentIndex].acces_metier }}</p>
 
               <h3>Compétences</h3>
-              <p>{{ results[currentIndex].competences }}</p>
+              <p>{{ results[currentIndex].centres_interet }}</p>
 
               <h3>Formations</h3>
               <ul v-if="results[currentIndex].formations.length">
                 <li v-for="formation in results[currentIndex].formations" :key="formation">
-                  <router-link :to="'/formation/' + formation.split(':')[0].trim()">
-                    {{ formation }}
+                  <router-link :to="'/formation/' + formation.replace(/[\[\]']/g, '').split(':')[0].trim()">
+                    {{ formation.replace(/[\[\]']/g, '') }}
                   </router-link>
                 </li>
               </ul>

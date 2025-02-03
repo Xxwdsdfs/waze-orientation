@@ -157,7 +157,7 @@ def call_api_route():
                     'libelleAppellation': libelleAppellation,
                     'acces_metier': "Non disponible",  # Valeur par défaut
                     'description': "Non disponible",  # Valeur par défaut
-                    'competences': "Non disponible",  # Valeur par défaut
+                    'centres_interet': "Non disponible",  # Valeur par défaut
                     'formations': []  # Ajout d'une clé pour les formations
                     }
 
@@ -169,7 +169,7 @@ def call_api_route():
                     # Met à jour les informations de acces_metier, description, etc. à partir des résultats de Supabase
                     metier_data['acces_metier'] = supabase_result.get('acces_metier', "Non disponible")
                     metier_data['accroche_metier'] = supabase_result.get('accroche_metier', "Non disponible")
-                    metier_data['competences'] = supabase_result.get('competences', "Non disponible")
+                    metier_data['centres_interet'] = supabase_result.get('centres_interet', "Non disponible")
                     formations_ids = supabase_result.get('formations_min_requise_id', 'N/A')
                     formations_libs = supabase_result.get('formations_min_requise_libelle', 'Non disponible')
 
