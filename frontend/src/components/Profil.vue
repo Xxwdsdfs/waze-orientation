@@ -1,5 +1,7 @@
 <template>
     <div class="profile-container">
+         <!-- 🔙 Bouton Retour -->
+    <button @click="goToHome" class="back-button">🏠 Retour à l'accueil</button>
       <h1>Mon Profil</h1>
   
       <div v-if="user">
@@ -78,6 +80,7 @@
   <script>
   import { ref, onMounted } from "vue";
   import { supabase } from "../supabase";
+  import { useRouter } from "vue-router";
   
   export default {
     setup() {
@@ -85,7 +88,13 @@
       const likedCards = ref([]);
       const errorMessage = ref("");
       const selectedCard = ref(null);
-  
+      const router = useRouter(); // 🔄 Utilisation du routeur Vue
+
+    // 🔙 Fonction pour revenir à l'accueil
+    const goToHome = () => {
+    router.push("/");
+    };
+    
       // Vérifier l'authentification et charger les likes
       onMounted(async () => {
         const { data: session } = await supabase.auth.getSession();
@@ -170,6 +179,7 @@
         selectedCard,
         toggleDetails,
         cleanFormations,
+        goToHome, 
       };
     },
   };
@@ -437,7 +447,7 @@
   text-align: left;
   color: white;
   max-width: 60%; /* 🔥 Pour équilibrer avec l'image */
-  margin-top: 15%;
+  margin-top: 1%;
 }
 .popup-title {
   position: absolute;
@@ -446,6 +456,24 @@
   font-size: 1.8em;
   font-weight: bold;
   color: white;
+}
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: #d48400;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease-in-out;
+}
+
+.back-button:hover {
+  background: #0056b3;
 }
 
 
