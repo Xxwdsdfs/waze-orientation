@@ -124,7 +124,7 @@
     <router-view></router-view>
   </div>
           <!-- Bouton pour accéder au Chatbot -->
-          <a href="/chatbot" target="_blank" class="chatbot-button">🤖 Madame PICHON</a>
+          <a href="/chatbot" target="_blank" class="chatbot-button">🤖 Mon conseiller</a>
 
 </template>
 
@@ -132,6 +132,7 @@
 <script>
 import { ref, onMounted, nextTick } from "vue";
 import { supabase } from "../supabase";
+import { watch } from 'vue';
 
 export default {
   setup() {
@@ -205,6 +206,10 @@ export default {
       }
     };
 
+    watch(() => currentIndex, (newIndex) => {
+      console.log("Nouvel index sélectionné :", newIndex);
+      console.log("Données du métier :", results.value[newIndex]);
+    });
     const goToMetierPage = (id) => {
       router.push(`/metier/${id}`);
     };

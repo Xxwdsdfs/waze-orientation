@@ -79,6 +79,15 @@ def query_supabase(libelleAppellation):
         print(f"Erreur lors de l'interrogation de Supabase : {e}")
         return []
 
+def clean_quotes(value):
+    """ Remplace uniquement les apostrophes externes par des guillemets doubles """
+    if isinstance(value, str):
+        value = value.strip()  # Supprimer espaces inutiles
+        if value.startswith("'") and value.endswith("'"):  # Vérifier s'il est encadré de '
+            return '"' + value[1:-1] + '"'  # Remplace les ' externes par "
+    return value
+
+
 @app.route('/formation/<code_for>', methods=['GET'])
 def get_formation_details(code_for):
     try:
@@ -98,6 +107,31 @@ def get_formation_details(code_for):
     except Exception as e:
         print(f"Erreur dans get_formation_details : {e}")
         return jsonify({"error": str(e)}), 500
+@app.route('/metier/<identifiant>', methods=['GET'])
+def get_metier_details(identifiant):
+    try:
+        print(f"🔍 Requête reçue pour récupérer le métier avec identifiant : {identifiant}")
+
+        response = supabase.table('metiers_id').select('*').eq('identifiant', identifiant).execute()
+        
+        print(f"🔍 Réponse Supabase : {response}")
+
+        if not response.data:
+            print("🚨 Aucun métier trouvé")
+            return jsonify({"error": "Métier non trouvé"}), 404
+
+        metier_data = response.data[0]
+
+        # 🚀 Ajouter explicitement l'identifiant dans la réponse
+        metier_data["identifiant"] = identifiant  
+
+        print("✅ Métier trouvé :", metier_data)
+        return jsonify(metier_data)
+
+    except Exception as e:
+        print(f"❌ Erreur dans get_metier_details : {e}")
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/call_api', methods=['POST'])
 def call_api_route():
@@ -105,21 +139,22 @@ def call_api_route():
     intitule = data.get('intitule')
     
     try:
-        print(f"Appel API ONISEP avec : {intitule}")
+        print(f"🔍 Appel API ONISEP avec : {intitule}")
         api_response = search_metier(token_manager, intitule)
         
         metiers = []
         if api_response and 'results' in api_response:
             for metier in api_response['results']:
-                code_rome = metier.get('code_rome', 'N/A')
                 libelleAppellation = metier.get('libelle_metier', 'Inconnu')
+                identifiant = metier.get('identifiants', 'Inconnu')
 
-                # Récupération des données Supabase associées au code ROME
+                # 🔍 Récupération des données Supabase
                 supabase_results = query_supabase(libelleAppellation)
 
-
+                # Structure des données métier
                 metier_data = {
-                    'libelleAppellation': metier.get('libelle_metier', 'Inconnu'),
+                    'libelleAppellation': libelleAppellation,
+                    'identifiant' : identifiant,
                     'lien_site_onisepfr': metier.get('lien_site_onisepfr', ''),
                     'nom_publication': metier.get('nom_publication', ''),
                     'collection': metier.get('collection', ''),
@@ -130,10 +165,10 @@ def call_api_route():
                     'libelleRome': metier.get('libelle_rome', 'Non disponible'),
                     'lien_rome': metier.get('lien_rome', ''),
                     'domainesous_domaine': metier.get('domainesous-domaine', ''),
-                    'formations': []  # À remplir avec les données de Supabase si disponible
+                    'formations': []  # 📌 À remplir avec Supabase si disponible
                 }
 
-
+                # 🔍 Vérification et traitement des résultats Supabase
                 if supabase_results:
                     supabase_result = supabase_results[0]
                     metier_data.update({
@@ -142,23 +177,56 @@ def call_api_route():
                         'centres_interet': supabase_result.get('centres_interet', "Non disponible"),
                     })
 
+                    # Récupération brute des formations
                     formations_ids = supabase_result.get('formations_min_requise_id', 'N/A')
                     formations_libs = supabase_result.get('formations_min_requise_libelle', 'Non disponible')
+                    
+                    
+                    
+                    print(f"🚀 Formations récupérées (brut) - IDs: {formations_ids}, Libellés: {formations_libs}")
 
+                    # 🔍 Vérifier si formations_ids et formations_libs sont stockés sous forme de JSON
+                    def safe_json_loads(value):
+                        """ Essaie de charger une valeur JSON, sinon retourne la valeur brute """
+                        if isinstance(value, str) and value.startswith("[") and value.endswith("]"):
+                            try:
+                                return json.loads(value)
+                            except json.JSONDecodeError:
+                                print(f"❌ Erreur JSON sur {value}, utilisation brute")
+                        return value
+
+                    formations_ids = safe_json_loads(formations_ids)
+                    formations_libs = safe_json_loads(formations_libs)
+
+                    # 🔍 Vérifier et normaliser les listes
                     if isinstance(formations_ids, str):
                         formations_ids = formations_ids.split(", ")
+
                     if isinstance(formations_libs, str):
                         formations_libs = formations_libs.split(", ")
 
+                    if not isinstance(formations_ids, list):
+                        formations_ids = [formations_ids]
+
+                    if not isinstance(formations_libs, list):
+                        formations_libs = [formations_libs]
+
+                    print(f"📢 Vérification longueurs - IDs: {len(formations_ids)}, Libellés: {len(formations_libs)}")
+
+                    # 📌 Assurer que les longueurs correspondent avant de les insérer
                     if len(formations_ids) == len(formations_libs):
                         metier_data['formations'] = [f"{code} : {libelle}" for code, libelle in zip(formations_ids, formations_libs)]
                     else:
                         metier_data['formations'] = ["Aucune formation disponible"]
-                        
+
+                print(f"📌 Formations finales ajoutées au métier {libelleAppellation}: {metier_data['formations']}")
+                
                 metiers.append(metier_data)
         
         return jsonify(metiers)
+
     except Exception as e:
+        print(f"❌ Erreur dans call_api_route : {e}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":

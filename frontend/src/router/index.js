@@ -11,7 +11,7 @@ const routes = [
   { path: '/formation/:id', component: FormationDetails },
   { path: '/profil', component: Profil },
   { path: '/chatbot', component: Chatbot },
-  { path: '/metier/:id', component: Metier }
+  { path: '/metier/:identifiant', component: Metier }
 ];
 
 const router = createRouter({

@@ -1,6 +1,6 @@
 <template>
     <div class="chatbot-container">
-      <h1>💬 Conseillère Pichon</h1>
+      <h1>💬 Mon conseiller</h1>
       <div class="chat-box">
         <div class="chat-messages">
           <div v-for="(message, index) in messages" :key="index" :class="message.role">
