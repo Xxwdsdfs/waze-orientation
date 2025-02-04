@@ -114,25 +114,10 @@
     </div>
 
     <router-view></router-view>
-
-    <button class="chat-button" @click="showChat = !showChat">💬</button>
-
-    <div v-if="showChat" class="chat-window">
-      <div class="chat-header">
-        <span>Chatbot</span>
-        <button class="close-chat" @click="showChat = false">✖</button>
-      </div>
-      <div class="chat-body">
-        <div v-for="(msg, index) in messages" :key="index" class="chat-message">
-          <span class="user-message">{{ msg.text }}</span>
-        </div>
-      </div>
-      <div class="chat-input">
-        <input type="text" v-model="chatInput" @keyup.enter="sendMessage" placeholder="Écrivez un message..." />
-        <button @click="sendMessage">➤</button>
-      </div>
-    </div>
   </div>
+          <!-- Bouton pour accéder au Chatbot -->
+          <a href="/chatbot" target="_blank" class="chatbot-button">🤖 Aller au Chatbot</a>
+
 </template>
 
 
@@ -150,12 +135,6 @@ export default {
     const currentIndex = ref(0);
     const showPopup = ref(false);
     const showDetails = ref(false);
-
-
-    // 🔷 Variables pour le chat
-    const showChat = ref(false);
-    const chatInput = ref("");
-    const messages = ref([]);
 
     // 🔷 Variables pour le swipe
     const animating = ref(false);
@@ -417,14 +396,6 @@ export default {
       });
     });
 
-    // 🟢 Fonction pour envoyer un message dans le chat
-    const sendMessage = () => {
-      if (chatInput.value.trim() !== "") {
-        messages.value.push({ text: chatInput.value, sender: "user" });
-        chatInput.value = ""; // Vider le champ de texte après envoi
-      }
-    };
-
     // Vérifier si un utilisateur est connecté au chargement de l'application
     onMounted(async () => {
       const { data: session } = await supabase.auth.getSession();
@@ -485,10 +456,6 @@ export default {
       showPopup,
       truncateText,
       startDrag,
-      showChat,
-      chatInput,
-      messages,
-      sendMessage,
       email,
       password,
       user,
@@ -509,6 +476,7 @@ export default {
     };
   },
 };
+
 </script>
 
 
@@ -685,90 +653,6 @@ input {
   margin-top: 10px;
 }
 
-.chat-button {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  background: #e59400;
-  color: white;
-  border: none;
-  padding: 15px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1.5em;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.chat-button:hover {
-  background: #0056b3;
-}
-
-.chat-window {
-  position: fixed;
-  bottom: 80px;
-  left: 20px;
-  width: 300px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.chat-header {
-  background: #e59400;
-  color: white;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-}
-
-.chat-body {
-  padding: 10px;
-  height: 200px;
-  overflow-y: auto;
-}
-
-
-.chat-input {
-  display: flex;
-  padding: 10px;
-  border-top: 1px solid #ccc;
-}
-
-.chat-input input {
-  flex: 1;
-  padding: 8px;
-  border: none;
-  border-radius: 5px;
-}
-
-.chat-input button {
-  background: #e59400;
-  color: white;
-  border: none;
-  padding: 8px 10px;
-  cursor: pointer;
-  margin-left: 5px;
-  border-radius: 5px;
-}
-
-.chat-message {
-  background: #e1f5fe;
-  padding: 8px;
-  border-radius: 5px;
-  margin-bottom: 5px;
-  color: rgba(0, 0, 0);
-}
-
-.close-chat {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.2em;
-  cursor: pointer;
-}
 .auth-button {
   position: fixed;
   top: 20px;
@@ -954,5 +838,36 @@ input {
   font-size: 1.2em;
 }
 
-
+.chatbot-button {
+  display: block;
+  margin-top: 20px;
+  padding: 10px 15px;
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 1.2em;
+  text-transform: uppercase;
+}
+.chatbot-button:hover {
+  background: #0056b3;
+}
+.chatbot-button {
+  display: block;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  padding: 10px 15px;
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 1.2em;
+  text-transform: uppercase;
+}
+.chatbot-button:hover {
+  background: #0056b3;
+}
 </style>

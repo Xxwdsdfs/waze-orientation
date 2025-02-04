@@ -58,6 +58,9 @@
       <p><strong>♿ Accessibilité :</strong> {{ ecole["ENS accessibilité"] || "Non renseignée" }}</p>
       <p><strong>📚 Modalité :</strong> {{ ecole["AF modalités scolarité"] || "Non renseignée" }}</p>
       <p><strong>💰 Coût :</strong> {{ ecole["AF coût scolarité"] || "Non renseigné" }}</p>
+      <p v-if="distances[ecole['Lieu d\'enseignement (ENS) libellé']]">
+        🚗 Distance : {{ distances[ecole["Lieu d'enseignement (ENS) libellé"]] }} km
+      </p>
       <p>
         <strong>🔗 Lien :</strong> 
         <a :href="ecole['ENS site web']" target="_blank">
@@ -68,6 +71,9 @@
   </div>
 <div class="map-container">
   <h3>📍 Localisation des établissements</h3>
+  <button @click="getUserLocation" class="location-button">
+    📍 Activer ma localisation
+  </button>
   <iframe v-if="showMap && mapUrl" :src="mapUrl" width="100%" height="400px" frameborder="0"></iframe>
   <button @click="toggleMap" class="map-button">
     {{ showMap ? "Masquer la carte" : "Voir la carte" }}
@@ -78,8 +84,7 @@
   </div>
 </template>
 
-<script>
-import { ref, onMounted } from "vue";
+<script>import { ref, onMounted } from "vue";
 import { supabase } from "../supabase";
 
 export default {
@@ -93,6 +98,8 @@ export default {
       showMap: false,  // ✅ Ajout de l'état pour afficher/masquer la carte
       mapUrl: "",  // ✅ URL sera mise à jour dynamiquement
       formationId: "",  // ✅ Stocke le formation_id récupéré
+      userLocation: null, // ✅ Stocke la localisation du user
+      distances: {}, // ✅ Stocke les distances entre le user et chaque école
     };
   },
   async created() {
@@ -106,9 +113,9 @@ export default {
       this.formationId = this.extractCodeFOR(id);  // ✅ Stocke le formation_id
 
       if (this.formationId) {
-      await this.fetchEcoles(this.formationId);
-      this.updateMapUrl();  // ✅ Mise à jour de l'URL après récupération du formation_id
-    }
+        await this.fetchEcoles(this.formationId);
+        this.updateMapUrl();  // ✅ Mise à jour de l'URL après récupération du formation_id
+      }
     } catch (err) {
       this.error = err.message;
     } finally {
@@ -132,6 +139,11 @@ export default {
 
         if (error) throw error;
         this.ecoles = data;
+        
+        // ✅ Met à jour les distances si la localisation du user est déjà connue
+        if (this.userLocation) {
+          this.calculateDistances();
+        }
       } catch (err) {
         this.error = err.message;
       }
@@ -149,6 +161,61 @@ export default {
       if (this.showMap) {
         this.updateMapUrl();  // ✅ Mise à jour de l'URL avant affichage
       }
+    },
+
+    // ✅ Récupération de la localisation du user
+    getUserLocation() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            this.userLocation = {
+              lat: position.coords.latitude,
+              lon: position.coords.longitude,
+            };
+            console.log("📍 Localisation utilisateur :", this.userLocation);
+            this.calculateDistances(); // ✅ Calcul des distances après récupération
+          },
+          (error) => {
+            console.error("❌ Erreur de géolocalisation :", error.message);
+          }
+        );
+      } else {
+        console.error("❌ Géolocalisation non supportée par ce navigateur.");
+      }
+    },
+
+    // ✅ Calcul des distances entre le user et les écoles
+    calculateDistances() {
+      if (!this.userLocation || !this.ecoles.length) return;
+
+      this.distances = {}; // Réinitialisation
+
+      this.ecoles.forEach((ecole) => {
+        if (ecole["ENS latitude"] && ecole["ENS longitude"]) {
+          const lat1 = this.userLocation.lat;
+          const lon1 = this.userLocation.lon;
+          const lat2 = parseFloat(ecole["ENS latitude"]);
+          const lon2 = parseFloat(ecole["ENS longitude"]);
+
+          const R = 6371; // Rayon de la Terre en km
+          const dLat = ((lat2 - lat1) * Math.PI) / 180;
+          const dLon = ((lon2 - lon1) * Math.PI) / 180;
+          const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos((lat1 * Math.PI) / 180) *
+              Math.cos((lat2 * Math.PI) / 180) *
+              Math.sin(dLon / 2) *
+              Math.sin(dLon / 2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          const distance = R * c; // Distance en km
+
+          this.distances[ecole["Lieu d'enseignement (ENS) libellé"]] = distance.toFixed(2);
+          ecole.distance = distance; // ✅ Ajoute la distance à chaque école
+        }
+      });
+
+      console.log("📏 Distances calculées :", this.distances);
+      this.ecoles.sort((a, b) => a.distance - b.distance);
     }
   }
 };
@@ -262,5 +329,20 @@ h3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.location-button {
+  background: #28a745;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  display: block;
+  margin: 10px auto;
+}
+
+.location-button:hover {
+  background: #218838;
 }
 </style>
