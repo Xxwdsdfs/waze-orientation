@@ -1,6 +1,6 @@
 <template>
     <div class="chatbot-container">
-      <h1>💬 Chat avec Mistral</h1>
+      <h1>💬 Conseillère Pichon</h1>
       <div class="chat-box">
         <div class="chat-messages">
           <div v-for="(message, index) in messages" :key="index" :class="message.role">
@@ -78,13 +78,14 @@
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 10px;
-    background-color: #f9f9f9;
+    background-color: #a57f50;
   }
   
   .chat-box {
     display: flex;
     flex-direction: column;
     height: 500px;
+    background: #dbc49a;
   }
   
   .chat-messages {
@@ -121,7 +122,7 @@
   
   .chat-input button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #ff4d4d;
     color: white;
     border: none;
     border-radius: 5px;
@@ -129,6 +130,6 @@
   }
   
   .chat-input button:hover {
-    background-color: #0056b3;
+    background-color: #cc0000;
   }
   </style>

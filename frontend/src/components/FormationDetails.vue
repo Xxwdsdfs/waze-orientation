@@ -226,7 +226,7 @@ export default {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  background: #1e1e1e;
+  background: #a57f50;
   color: #fff;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
@@ -241,7 +241,7 @@ export default {
 .formation-title {
   text-align: center;
   font-size: 1.8em;
-  color: #f5a623;
+  color: #fff;
 }
 
 .info-grid {
@@ -253,14 +253,14 @@ export default {
 
 .info-box {
   flex: 1;
-  background: #2e2e2e;
+  background: #dbc49a;
   padding: 15px;
   border-radius: 8px;
   text-align: center;
 }
 
 .description, .type-formation, .more-info {
-  background: #2e2e2e;
+  background: #dbc49a;
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;
@@ -274,7 +274,7 @@ export default {
 }
 
 h3 {
-  color: #f5a623;
+  color: #a57f50;
   margin-bottom: 10px;
 }
 
@@ -292,10 +292,14 @@ h3 {
   max-width: 90%;
   margin: 20px auto;
   padding: 15px;
-  background: #2e2e2e;
+  background: #a57f50;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+}
+
+.ecoles-section h3{
+  color: #fff;
 }
 
 .ecoles-container {
@@ -308,7 +312,7 @@ h3 {
 }
 
 .ecole-card {
-  background: #3a3a3a;
+  background: #dbc49a;
   padding: 10px;
   border-radius: 8px;
   text-align: center;
@@ -317,12 +321,12 @@ h3 {
 
 .ecole-card h4 {
   font-size: 1.2em;
-  color: #f5a623;
+  color: #a57f50;
 }
 
 .ecole-card p {
   font-size: 0.9em;
-  color: #ddd;
+  color: #fff;
 }
 
 .ecoles-header {
@@ -331,7 +335,7 @@ h3 {
   align-items: center;
 }
 .location-button {
-  background: #28a745;
+  background: #007bff;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -343,6 +347,12 @@ h3 {
 }
 
 .location-button:hover {
-  background: #218838;
+  background: #0056b3;
+}
+.map-button{
+  background: #ff4d4d;
+}
+.map-button:hover{
+  background: #cc0000;
 }
 </style>

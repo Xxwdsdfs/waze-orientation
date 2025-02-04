@@ -6,28 +6,6 @@ from flask_cors import CORS
 from supabase import create_client, Client
 import re  # Import pour gérer la découpe du libellé
 
-def query_supabase(libelleAppellation):
-    try:
-        print("Interrogation Supabase pour le libelleAppellation :", libelleAppellation)
-
-        # Extraire uniquement la partie avant " / " si elle existe
-        libelle_simplifie = re.split(r" / ", libelleAppellation)[0]
-        print("Libellé simplifié pour la recherche :", libelle_simplifie)
-
-        # Requête Supabase sur la colonne "libelle_masculin"
-        response = supabase.table('metiers_id') \
-            .select('*') \
-            .eq('libelle_masculin', libelle_simplifie) \
-            .execute()
-
-        print("Résultat de Supabase :", response)
-        return response.data if response.data else []
-    
-    except Exception as e:
-        print(f"Erreur lors de l'interrogation de Supabase : {e}")
-        return []
-
-
 # Configuration Supabase
 SUPABASE_URL = 'https://mufpmucjikpyxfakpxut.supabase.co'
 SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11ZnBtdWNqaWtweXhmYWtweHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgyOTU1NTUsImV4cCI6MjA1Mzg3MTU1NX0.hKnBGT-YL7AmVSiFnGhiiSHRTgxbYcoLjf6ddQnGn4I'
@@ -104,9 +82,21 @@ def query_supabase(libelleAppellation):
 @app.route('/formation/<code_for>', methods=['GET'])
 def get_formation_details(code_for):
     try:
+        print(f"Recherche de la formation avec identifiant : {code_for}")
         response = supabase.table('formations_id').select('*').eq('identifiant', code_for).execute()
-        return jsonify(response.data[0]) if response.data else jsonify({"error": "Formation non trouvée"}), 404
+        
+        print(f"Réponse Supabase : {response}")
+
+        # Vérifie si les données existent
+        if response.data:
+            formation_data = response.data[0]
+            print("Données envoyées au frontend :", formation_data)  # Log des données envoyées
+            return jsonify(formation_data)
+        else:
+            print("Aucune formation trouvée")
+            return jsonify({"error": "Formation non trouvée"}), 404
     except Exception as e:
+        print(f"Erreur dans get_formation_details : {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/call_api', methods=['POST'])

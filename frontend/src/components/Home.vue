@@ -42,7 +42,7 @@
   </div>
 
   <div class="home-container">
-    <h1 class="title">Recherche de Métiers</h1>
+    <h1 class="title">Formago</h1>
 
     <div class="form-container">
       <form @submit.prevent="handleSubmit">
@@ -124,7 +124,7 @@
     <router-view></router-view>
   </div>
           <!-- Bouton pour accéder au Chatbot -->
-          <a href="/chatbot" target="_blank" class="chatbot-button">🤖 Aller au Chatbot</a>
+          <a href="/chatbot" target="_blank" class="chatbot-button">🤖 Madame PICHON</a>
 
 </template>
 
@@ -499,6 +499,7 @@ export default {
   padding: 0;
 }
 
+
 html, body {
   font-size: 62.5%;
   font-family: 'Poppins', sans-serif;
@@ -506,8 +507,6 @@ html, body {
 }
 
 body {
-  background: linear-gradient(to bottom, #023459, #002C2F);
-  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -518,8 +517,8 @@ body {
   max-width: 800px;
   margin: 40px auto;
   padding: 30px;
-  background: rgba(0, 44, 47, 0.95);
-  color: #B2A59F;
+  background:#a57f50;
+  color: #dbc49a;
   border-radius: 16px;
   box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.4);
   text-align: center;
@@ -531,14 +530,14 @@ body {
   font-size: 2.8em;
   font-weight: 700;
   margin-bottom: 20px;
-  color: #B2A59F;
+  color: #dbc49a;
   text-transform: uppercase;
   letter-spacing: 1.2px;
   text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.2);
 }
 
 .form-container {
-  background: rgba(30, 100, 110, 0.9);
+  background: #dbc49a;
   padding: 25px;
   border-radius: 16px;
   margin-bottom: 20px;
@@ -555,7 +554,7 @@ label {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #B2A59F;
+  color: #a57f50;
   font-size: 1.3em;
   text-transform: uppercase;
   letter-spacing: 0.8px;
@@ -567,7 +566,7 @@ input {
   border-radius: 10px;
   border: none;
   background: rgba(178, 165, 159, 0.9);
-  color: #002C2F;
+  color: #a57f50;
   font-size: 1.3em;
   transition: all 0.3s ease-in-out;
   box-shadow: inset 2px 2px 8px rgba(0, 0, 0, 0.2);
@@ -580,7 +579,7 @@ input:focus {
   border: 2px solid #B2A59F;
 }
 .search-button {
-  background: linear-gradient(135deg, #1E646E, #002C2F);
+  background: linear-gradient(135deg, #a57f50, #dbc49a);
   color: white;
   border: none;
   padding: 12px 18px;
@@ -594,7 +593,7 @@ input:focus {
 }
 
 .search-button:hover {
-  background: linear-gradient(135deg, #002C2F, #1E646E);
+  background: linear-gradient(135deg, #dbc49a, #a57f50);
   transform: scale(1.05);
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
 }
@@ -605,7 +604,7 @@ input:focus {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 44, 47, 0.75);
+  background: #f5e1a4;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -613,7 +612,7 @@ input:focus {
 }
 
 .popup {
-  background: rgba(0, 44, 47, 0.95);
+  background:#a57f50;
   padding: 25px;
   border-radius: 16px;
   width: 35%;
@@ -697,8 +696,8 @@ input:focus {
 }
 
 .like-button {
-  background: linear-gradient(135deg, #1E646E, #002C2F);
-  color: white;
+  background: linear-gradient(135deg, #a57f50, #dbc49a);
+  color: #ff4d4d;
   border: none;
   padding: 4px 4px;
   border-radius: 30px;
@@ -715,13 +714,13 @@ input:focus {
 
 
 .like-button:hover {
-  background: linear-gradient(135deg, #002C2F, #1E646E);
+  background: linear-gradient(135deg, #dbc49a, #a57f50);
   transform: scale(1.05);
 }
 
 
 .search-button {
-  background: linear-gradient(135deg, #1E646E, #002C2F);
+  background: linear-gradient(135deg, #a57f50, #dbc49a);
   color: white;
   border: none;
   padding: 12px 18px;
@@ -735,7 +734,7 @@ input:focus {
 }
 
 .search-button:hover {
-  background: linear-gradient(135deg, #002C2F, #1E646E);
+  background: linear-gradient(135deg, #dbc49a, #a57f50);
   transform: scale(1.05);
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
 }
@@ -744,7 +743,7 @@ input:focus {
   position: fixed;
   top: 20px;
   right: 20px;
-  background: linear-gradient(135deg, #1E646E, #023459);
+  background: linear-gradient(135deg, #a57f50, #a57f50);
   color: white;
   border: none;
   padding: 12px 20px;
@@ -756,7 +755,7 @@ input:focus {
 }
 
 .auth-button:hover {
-  background: linear-gradient(135deg, #023459, #1E646E);
+  background: linear-gradient(135deg, #a57f50, #a57f50);
   transform: scale(1.05);
 }
 
@@ -766,7 +765,7 @@ input:focus {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 44, 47, 0.8);
+  background: #a57f50;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -774,7 +773,7 @@ input:focus {
 }
 
 .auth-modal-content {
-  background: rgba(0, 44, 47, 0.95);
+  background:#a57f50;
   padding: 25px;
   border-radius: 16px;
   width: 380px;
@@ -800,7 +799,7 @@ input:focus {
 .card-image {
   width: 100%;
   height: 260px;
-  background: #023459;
+  background: #a57f50;
   border-radius: 12px;
   margin: 15px 0;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
@@ -814,7 +813,7 @@ input:focus {
 }
 
 .like-button:hover {
-  background: linear-gradient(135deg, #002C2F, #1E646E);
+  background: linear-gradient(135deg, #dbc49a, #a57f50);
 }
 
 .image-container {
@@ -826,7 +825,7 @@ input:focus {
   overflow: hidden;
   border-radius: 12px;
   margin-top: 30px;
-  background: #002C2F;
+  background: #dbc49a;
   box-shadow: inset 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -843,7 +842,7 @@ input:focus {
   background: rgba(30, 100, 110, 0.9);
   border-radius: 12px;
   text-align: left;
-  color: white;
+  color: #dbc49a;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -857,7 +856,7 @@ input:focus {
 }
 
 .details-section li {
-  background: #1E646E;
+  background: #a57f50;
   padding: 8px;
   border-radius: 6px;
   margin-top: 5px;
@@ -874,7 +873,7 @@ input:focus {
 }
 
 .auth-button {
-  background: linear-gradient(135deg, #1E646E, #023459);
+  background: linear-gradient(135deg, #a57f50, #a57f50);
   color: white;
   border: none;
   padding: 10px 18px;
@@ -886,7 +885,7 @@ input:focus {
 }
 
 .auth-button:hover {
-  background: linear-gradient(135deg, #023459, #1E646E);
+  background: linear-gradient(135deg, #a57f50, #a57f50);
   transform: scale(1.05);
 }
 
@@ -894,7 +893,7 @@ input:focus {
   position: absolute;
   top: 110%;
   right: 0;
-  background: rgba(0, 44, 47, 0.9);
+  background: #a57f50;
   border-radius: 12px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
   display: flex;
@@ -923,12 +922,12 @@ input:focus {
   align-items: center;
   gap: 10px;
   font-size: 1em;
-  background: rgba(30, 100, 110, 0.9);
+  background: #a57f50;
   transition: background 0.2s ease-in-out;
 }
 
 .auth-menu-item:hover {
-  background: rgba(0, 44, 47, 0.9);
+  background: #dbc49a;
 }
 
 .auth-menu-item i {
@@ -941,7 +940,7 @@ input:focus {
   bottom: 20px;
   left: 20px;
   padding: 12px 18px;
-  background: linear-gradient(135deg, #1E646E, #002C2F);
+  background: linear-gradient(135deg, #a57f50, #dbc49a);
   color: white;
   text-decoration: none;
   border-radius: 30px;
@@ -953,7 +952,7 @@ input:focus {
 }
 
 .chatbot-button:hover {
-  background: linear-gradient(135deg, #002C2F, #1E646E);
+  background: linear-gradient(135deg, #dbc49a, #a57f50);
   transform: scale(1.05);
 }
 
