@@ -155,6 +155,7 @@ def call_api_route():
                 metier_data = {
                     'codeRome': codeRome,
                     'libelleAppellation': libelleAppellation,
+                    'identifiant': "Non disponible",  # Valeur par défaut
                     'acces_metier': "Non disponible",  # Valeur par défaut
                     'description': "Non disponible",  # Valeur par défaut
                     'centres_interet': "Non disponible",  # Valeur par défaut
@@ -170,6 +171,7 @@ def call_api_route():
                     metier_data['acces_metier'] = supabase_result.get('acces_metier', "Non disponible")
                     metier_data['accroche_metier'] = supabase_result.get('accroche_metier', "Non disponible")
                     metier_data['centres_interet'] = supabase_result.get('centres_interet', "Non disponible")
+                    metier_data['identifiant'] = supabase_result.get('identifiant', "Non disponible")
                     formations_ids = supabase_result.get('formations_min_requise_id', 'N/A')
                     formations_libs = supabase_result.get('formations_min_requise_libelle', 'Non disponible')
 
