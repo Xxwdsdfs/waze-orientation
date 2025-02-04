@@ -71,8 +71,8 @@ def search_metier(token_manager, metier_recherche, size=10):
 def query_supabase(libelleAppellation):
     try:
         print("Interrogation Supabase pour le libelleAppellation :", libelleAppellation)
-        libelle_simplifie = re.split(r" / ", libelleAppellation)[0]
-        response = supabase.table('metiers_id').select('*').eq('libelle_masculin', libelle_simplifie).execute()
+        libelle_simplifie = re.split(r" / ", libelleAppellation)[1] if " / " in libelleAppellation else libelleAppellation
+        response = supabase.table('metiers_id').select('*').eq('libelle_feminin', libelle_simplifie).execute()
         print("Réponse brute Supabase :", response)
         return response.data if response.data else []
     except Exception as e:
