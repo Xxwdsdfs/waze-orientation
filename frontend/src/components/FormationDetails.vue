@@ -44,14 +44,13 @@
     </div>
   </div>
 
-  <!-- ✅ Ajout de l'affichage des écoles associées -->
+  <!-- ✅ Section des écoles associées -->
   <div v-if="ecoles.length > 0" class="ecoles-section">
-  <div class="ecoles-header">
-    <h3>Écoles associées</h3>
-    <button @click="toggleMap" class="map-button">📍 Voir la carte</button>
-  </div>
+    <div class="ecoles-header">
+      <h3>Écoles associées</h3>
+    </div>
 
-  <div class="ecoles-container">
+    <div class="ecoles-container">
     <div v-for="ecole in ecoles" :key="ecole.id" class="ecole-card">
       <h4>🏫 {{ ecole["Lieu d'enseignement (ENS) libellé"] }}</h4>
       <p><strong>📍 Adresse :</strong> {{ ecole["ENS adresse"] || "Non renseignée" }}</p>
@@ -67,20 +66,21 @@
       </p>
     </div>
   </div>
-    <!-- ✅ Carte masquée par défaut, s'affiche après clic -->
-    <div v-if="showMap" class="map-section">
-    <h3>📍 Localisation des établissements</h3>
-    <div id="map"></div>
-  </div>
+<div class="map-container">
+  <h3>📍 Localisation des établissements</h3>
+  <iframe v-if="showMap && mapUrl" :src="mapUrl" width="100%" height="400px" frameborder="0"></iframe>
+  <button @click="toggleMap" class="map-button">
+    {{ showMap ? "Masquer la carte" : "Voir la carte" }}
+  </button>
 </div>
 
 
+  </div>
 </template>
 
 <script>
 import { ref, onMounted } from "vue";
 import { supabase } from "../supabase";
-import L from "leaflet";
 
 export default {
   data() {
@@ -90,27 +90,25 @@ export default {
       loading: false,
       error: null,
       errorMessage: null,
-      showMap: false, // ✅ Suivi de l'affichage de la carte
-      map: null,
+      showMap: false,  // ✅ Ajout de l'état pour afficher/masquer la carte
+      mapUrl: "",  // ✅ URL sera mise à jour dynamiquement
+      formationId: "",  // ✅ Stocke le formation_id récupéré
     };
   },
   async created() {
     this.loading = true;
     const id = this.$route.params.id;
     try {
-      // 🔹 Récupération des données de la formation depuis l'API locale
       const response = await fetch(`http://localhost:5000/formation/${id}`);
       if (!response.ok) throw new Error("Erreur lors de la récupération des données.");
       this.formation = await response.json();
 
-      // 🔹 Extraction du FOR_ID depuis l'URL locale
-      const forId = this.extractCodeFOR(id);
-      console.log("🔎 Code FOR extrait depuis l'URL de la route :", forId);
+      this.formationId = this.extractCodeFOR(id);  // ✅ Stocke le formation_id
 
-      // 🔹 Si un FOR_ID est trouvé, récupérer les écoles correspondantes
-      if (forId) {
-        await this.fetchEcoles(forId);
-      }
+      if (this.formationId) {
+      await this.fetchEcoles(this.formationId);
+      this.updateMapUrl();  // ✅ Mise à jour de l'URL après récupération du formation_id
+    }
     } catch (err) {
       this.error = err.message;
     } finally {
@@ -118,149 +116,109 @@ export default {
     }
   },
   methods: {
-    // 🔍 Extraire le Code FOR depuis l'URL locale (en gardant "FOR.")
     extractCodeFOR(id) {
       if (!id) return null;
-      const match = id.match(/(FOR\.\d+)/); // Recherche "FOR.XXXX"
+      const match = id.match(/(FOR\.\d+)/);
       return match ? match[1] : null;
     },
 
-    // 📚 Fonction pour récupérer les écoles associées au FOR_ID (en comparant avec formation_id)
     async fetchEcoles(forId) {
-      if (!forId) return; // Évite une requête inutile
-
+      if (!forId) return;
       try {
-        console.log(`🔍 Recherche des écoles avec formation_id="${forId}"`);
-
         const { data, error } = await supabase
-          .from("ecoles") // Table Supabase
+          .from("ecoles")
           .select("*")
-          .eq("formation_id", forId); // 🔍 Filtrer avec formation_id
+          .eq("formation_id", forId);
 
-        if (error) {
-          console.error("❌ Erreur lors de la récupération des écoles :", error.message);
-          this.errorMessage = error.message;
-        } else {
-          this.ecoles = data;
-
-          // 📌 Vérification en console
-          console.log(`✅ ${this.ecoles.length} écoles trouvées avec formation_id="${forId}"`);
-          this.ecoles.forEach(ecole => {
-            console.log(`🏫 École : ${ecole['Lieu d\'enseignement (ENS) libellé']}, Formation ID: ${ecole.formation_id}`);
-          });
-        }
+        if (error) throw error;
+        this.ecoles = data;
       } catch (err) {
-        console.error("❌ Erreur :", err);
-        this.errorMessage = "Impossible de charger les écoles.";
+        this.error = err.message;
       }
     },
 
-    // ✅ Afficher/Masquer la carte et initialiser Leaflet
+    updateMapUrl() {
+      if (this.formationId) {
+        this.mapUrl = `http://localhost:5001/generate_map?formation_id=${this.formationId}`;
+        console.log("URL de la carte mise à jour :", this.mapUrl);
+      }
+    },
+
     toggleMap() {
       this.showMap = !this.showMap;
-
-      if (this.showMap && !this.map) {
-        this.initMap();
+      if (this.showMap) {
+        this.updateMapUrl();  // ✅ Mise à jour de l'URL avant affichage
       }
-    },
-
-    // 🌍 Initialisation de la carte Leaflet avec les écoles
-    initMap() {
-      if (!this.ecoles.length) return;
-
-      // Supprime la carte existante si déjà initialisée
-      if (this.map) {
-        this.map.remove();
-      }
-
-      const firstEcole = this.ecoles[0];
-      const center = [parseFloat(firstEcole["ENS latitude"]), parseFloat(firstEcole["ENS longitude"])];
-
-      this.map = L.map("map").setView(center, 10);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; OpenStreetMap',
-      }).addTo(this.map);
-
-      // Ajout des marqueurs pour chaque école
-      this.ecoles.forEach(ecole => {
-        if (ecole["ENS latitude"] && ecole["ENS longitude"]) {
-          const marker = L.marker([parseFloat(ecole["ENS latitude"]), parseFloat(ecole["ENS longitude"])]).addTo(this.map);
-          marker.bindPopup(`<strong>${ecole["Lieu d'enseignement (ENS) libellé"]}</strong><br>${ecole["ENS adresse"]}`);
-        }
-      });
     }
   }
 };
 </script>
 
-
-
 <style scoped>
 .formation-details {
-max-width: 800px;
-margin: 0 auto;
-padding: 20px;
-background: #1e1e1e;
-color: #fff;
-border-radius: 10px;
-box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #1e1e1e;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .title {
-text-align: center;
-font-size: 2em;
-margin-bottom: 20px;
+  text-align: center;
+  font-size: 2em;
+  margin-bottom: 20px;
 }
 
 .formation-title {
-text-align: center;
-font-size: 1.8em;
-color: #f5a623;
+  text-align: center;
+  font-size: 1.8em;
+  color: #f5a623;
 }
 
 .info-grid {
-display: flex;
-justify-content: space-between;
-gap: 20px;
-margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .info-box {
-flex: 1;
-background: #2e2e2e;
-padding: 15px;
-border-radius: 8px;
-text-align: center;
+  flex: 1;
+  background: #2e2e2e;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
 }
 
 .description, .type-formation, .more-info {
-background: #2e2e2e;
-padding: 15px;
-border-radius: 8px;
-margin-bottom: 15px;
+  background: #2e2e2e;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
 }
 
 .access-study {
-display: flex;
-justify-content: space-between;
-gap: 20px;
-margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 h3 {
-color: #f5a623;
-margin-bottom: 10px;
+  color: #f5a623;
+  margin-bottom: 10px;
 }
 
 .more-info a {
-color: #2331f5;
-text-decoration: none;
-font-weight: bold;
+  color: #2331f5;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 .more-info a:hover {
-text-decoration: underline;
+  text-decoration: underline;
 }
 
 .ecoles-section {
@@ -274,12 +232,12 @@ text-decoration: underline;
 }
 
 .ecoles-container {
-  max-height: 200px; /* Hauteur limitée */
-  overflow-y: auto; /* Ajoute le scroll si nécessaire */
+  max-height: 200px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 15px;
-  padding-right: 10px; /* Évite le chevauchement du scrollbar */
+  padding-right: 10px;
 }
 
 .ecole-card {
@@ -299,41 +257,10 @@ text-decoration: underline;
   font-size: 0.9em;
   color: #ddd;
 }
+
 .ecoles-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
-.map-button {
-  background: #f5a623;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s ease-in-out;
-}
-
-.map-button:hover {
-  background: #d48400;
-}
-
-.map-section {
-  max-width: 90%;
-  margin: 20px auto;
-  padding: 15px;
-  background: #2e2e2e;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
-}
-
-#map {
-  width: 100%;
-  height: 300px;
-  border-radius: 8px;
-}
-
-
 </style>

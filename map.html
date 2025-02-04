@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_08dfc5e2d665769bc88978f75b0a8294 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_08dfc5e2d665769bc88978f75b0a8294" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_08dfc5e2d665769bc88978f75b0a8294 = L.map(
+                "map_08dfc5e2d665769bc88978f75b0a8294",
+                {
+                    center: [47.6591, -2.7828],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 6,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_4b2d56585204395e6f6c3684ffa5a000 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+        
+    
+            tile_layer_4b2d56585204395e6f6c3684ffa5a000.addTo(map_08dfc5e2d665769bc88978f75b0a8294);
+        
+    
+            var marker_e5df723996590a2551140ac96611928a = L.marker(
+                [47.6591, -2.7828],
+                {}
+            ).addTo(map_08dfc5e2d665769bc88978f75b0a8294);
+        
+    
+            var icon_fd3c51b4de19bb91c267489b44b4efde = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_e5df723996590a2551140ac96611928a.setIcon(icon_fd3c51b4de19bb91c267489b44b4efde);
+        
+    
+        var popup_717ca299056bf0989104ee1eac8397a3 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_0ab3f930b66ac06b67e6bd328e1533f7 = $(`<div id="html_0ab3f930b66ac06b67e6bd328e1533f7" style="width: 100.0%; height: 100.0%;"><b>Lycée professionnel Jean Guéhenno</b><br>79 avenue de la Marne, BP 552</div>`)[0];
+                popup_717ca299056bf0989104ee1eac8397a3.setContent(html_0ab3f930b66ac06b67e6bd328e1533f7);
+            
+        
+
+        marker_e5df723996590a2551140ac96611928a.bindPopup(popup_717ca299056bf0989104ee1eac8397a3)
+        ;
+
+        
+    
+    
+            var marker_e1cc54e0e8ad9cefcc57e089b6b38e63 = L.marker(
+                [45.1377961, 4.1329171],
+                {}
+            ).addTo(map_08dfc5e2d665769bc88978f75b0a8294);
+        
+    
+            var icon_9b441c723b87f93b44597b820dcfac21 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_e1cc54e0e8ad9cefcc57e089b6b38e63.setIcon(icon_9b441c723b87f93b44597b820dcfac21);
+        
+    
+        var popup_2757800fa828b7a477b203f96a90c2be = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_615dc298dd1412c830ec3a0e1c463947 = $(`<div id="html_615dc298dd1412c830ec3a0e1c463947" style="width: 100.0%; height: 100.0%;"><b>Ecole nationale supérieur de pâtisserie - Ecole Ducasse</b><br>125 allée du Château de Montbarnier</div>`)[0];
+                popup_2757800fa828b7a477b203f96a90c2be.setContent(html_615dc298dd1412c830ec3a0e1c463947);
+            
+        
+
+        marker_e1cc54e0e8ad9cefcc57e089b6b38e63.bindPopup(popup_2757800fa828b7a477b203f96a90c2be)
+        ;
+
+        
+    
+</script>
+</html>
