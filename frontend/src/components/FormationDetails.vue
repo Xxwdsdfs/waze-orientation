@@ -1,4 +1,7 @@
 <template>
+    <router-link to="/">
+      <img :src="logo" alt="Logo" class="logo">
+    </router-link>
   <div class="formation-details">
     <h1 class="title">Détails de la Formation</h1>
     <div v-if="loading" class="loading">Chargement...</div>
@@ -86,6 +89,7 @@
 
 <script>import { ref, onMounted } from "vue";
 import { supabase } from "../supabase";
+import logo from '../assets/logo.png';
 
 export default {
   data() {
@@ -99,7 +103,8 @@ export default {
       mapUrl: "",  // ✅ URL sera mise à jour dynamiquement
       formationId: "",  // ✅ Stocke le formation_id récupéré
       userLocation: null, // ✅ Stocke la localisation du user
-      distances: {}, // ✅ Stocke les distances entre le user et chaque école
+      distances: {}, // ✅ Stocke les distances entre le user et chaque école*
+      logo
     };
   },
   async created() {
@@ -359,5 +364,14 @@ h3 {
 }
 .map-button:hover{
   background: #cc0000;
+}
+.logo {
+  position: fixed;  /* Fixe le logo en haut à gauche de l'écran */
+  top: -10px;        /* Distance par rapport au haut */
+  left: -10px;       /* Distance par rapport à la gauche */
+  width: 200px;      /* Ajuste la taille du logo selon tes besoins */
+  height: auto;
+  cursor: pointer;  /* Change le curseur pour montrer que c'est cliquable */
+  z-index: 1000;    /* S'assure que le logo reste au-dessus des autres éléments */
 }
 </style>

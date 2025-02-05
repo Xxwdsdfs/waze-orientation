@@ -1,4 +1,10 @@
 <template>
+    <div>
+      <router-link to="/">
+      <img :src="logo" alt="Logo" class="logo">
+    </router-link>
+    <router-view />
+  </div>
     <div class="chatbot-container">
       <h1>💬 Mon conseiller</h1>
       <div class="chat-box">
@@ -22,11 +28,13 @@
   </template>
   
   <script>
+  import logo from '../assets/logo.png';
   export default {
     data() {
       return {
         userInput: "", // Message saisi par l'utilisateur
         messages: [], // Historique des messages
+        logo
       };
     },
     methods: {
@@ -132,4 +140,21 @@
   .chat-input button:hover {
     background-color: #cc0000;
   }
+  .navbar {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+}
+
+.logo {
+  position: fixed;  /* Fixe le logo en haut à gauche de l'écran */
+  top: -10px;        /* Distance par rapport au haut */
+  left: -10px;       /* Distance par rapport à la gauche */
+  width: 200px;      /* Ajuste la taille du logo selon tes besoins */
+  height: auto;
+  cursor: pointer;  /* Change le curseur pour montrer que c'est cliquable */
+  z-index: 1000;    /* S'assure que le logo reste au-dessus des autres éléments */
+}
+
   </style>

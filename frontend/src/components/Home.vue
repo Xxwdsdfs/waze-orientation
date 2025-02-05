@@ -1,5 +1,8 @@
 <template>
-  <!-- Bouton pour gérer l'authentification et le profil -->
+  <router-link to="/">
+      <img :src="logo" alt="Logo" class="logo">
+    </router-link>
+      <!-- Bouton pour gérer l'authentification et le profil -->
   <div class="auth-container">
     <button class="auth-button" @click="toggleAuthMenu">
       {{ user ? "👤 " + user.email : "Se connecter" }}
@@ -133,6 +136,7 @@
 import { ref, onMounted, nextTick } from "vue";
 import { supabase } from "../supabase";
 import { watch } from 'vue';
+import logo from '../assets/logo.png';
 
 export default {
   setup() {
@@ -490,6 +494,7 @@ export default {
       toggleAuthMenu,
       authMenuVisible,
       likeCard,
+      logo
     };
   },
 };
@@ -959,6 +964,15 @@ input:focus {
 .chatbot-button:hover {
   background: linear-gradient(135deg, #1576ba, #25307c);
   transform: scale(1.05);
+}
+.logo {
+  position: fixed;  /* Fixe le logo en haut à gauche de l'écran */
+  top: -10px;        /* Distance par rapport au haut */
+  left: -10px;       /* Distance par rapport à la gauche */
+  width: 200px;      /* Ajuste la taille du logo selon tes besoins */
+  height: auto;
+  cursor: pointer;  /* Change le curseur pour montrer que c'est cliquable */
+  z-index: 1000;    /* S'assure que le logo reste au-dessus des autres éléments */
 }
 
 </style>
