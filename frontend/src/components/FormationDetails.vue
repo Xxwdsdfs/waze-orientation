@@ -226,7 +226,7 @@ export default {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  background: #a57f50;
+  background: #25307c;
   color: #fff;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
@@ -236,6 +236,10 @@ export default {
   text-align: center;
   font-size: 2em;
   margin-bottom: 20px;
+}
+
+.h3 {
+  color: #f9efe3;
 }
 
 .formation-title {
@@ -253,14 +257,15 @@ export default {
 
 .info-box {
   flex: 1;
-  background: #dbc49a;
+  background: #1576ba;
   padding: 15px;
   border-radius: 8px;
   text-align: center;
+  color: #f9efe3;
 }
 
 .description, .type-formation, .more-info {
-  background: #dbc49a;
+  background: #1576ba;
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;
@@ -274,7 +279,7 @@ export default {
 }
 
 h3 {
-  color: #a57f50;
+  color: #25307c;
   margin-bottom: 10px;
 }
 
@@ -292,7 +297,7 @@ h3 {
   max-width: 90%;
   margin: 20px auto;
   padding: 15px;
-  background: #a57f50;
+  background: #25307c;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   overflow: hidden;
@@ -312,7 +317,7 @@ h3 {
 }
 
 .ecole-card {
-  background: #dbc49a;
+  background: #1576ba;
   padding: 10px;
   border-radius: 8px;
   text-align: center;
@@ -321,7 +326,7 @@ h3 {
 
 .ecole-card h4 {
   font-size: 1.2em;
-  color: #a57f50;
+  color: #25307c;
 }
 
 .ecole-card p {

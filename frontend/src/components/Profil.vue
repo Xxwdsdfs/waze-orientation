@@ -190,7 +190,7 @@
   max-width: 100%; /* 🔥 Augmente la largeur */
   margin: auto;
   padding: 20px;
-  background: #a57f50;
+  background: #1576ba;
   color: white;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
@@ -212,7 +212,7 @@
   border-radius: 10px;
   text-align: center;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-  color: #a57f50;
+  color: #f9efe3;
 }
   
   .logout-button {
@@ -287,7 +287,7 @@
 
 .card {
   width: 250px;
-  background: #dbc49a;
+  background: #25307c;
   padding: 15px;
   border-radius: 10px;
   text-align: center;
@@ -349,7 +349,7 @@
   .details-container {
     margin-top: 15px;
     padding: 10px;
-    background: #a57f50;
+    background: #25307c;
     border-radius: 8px;
     text-align: left;
   }
@@ -367,7 +367,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: #a57f50;
+  background: #f9efe3;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -379,12 +379,13 @@
   flex-direction: row; /* 🔥 Place l'image à gauche et le texte à droite */
   align-items: center;
   justify-content: space-between;
-  background: #2e2e2e;
+  background: #1576ba;
   padding: 20px;
   border-radius: 10px;
   max-width: 90vw; /* 🔥 Plus large */
   max-height: 80vh;
   overflow: auto;
+  color: #f9efe3;
   gap: 20px; /* 🔥 Espace entre l'image et le texte */
 }
 
@@ -394,7 +395,7 @@
   display: flex;
   align-items: flex-start; /* 🔥 Place l'image en haut */
   justify-content: flex-start; /* 🔥 La colle à gauche */
-  background: #444;
+  background: #1576ba;
   border-radius: 8px;
   overflow: hidden;
   max-width: 45%; /* 🔥 Augmente légèrement la largeur de l'image */
@@ -454,7 +455,7 @@
   position: absolute;
   top: 60px;
   left: 70px;
-  background: #dbc49a;
+  background: #1576ba;
   color: white;
   border: none;
   padding: 10px 15px;

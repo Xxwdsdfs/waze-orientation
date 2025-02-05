@@ -522,8 +522,8 @@ body {
   max-width: 800px;
   margin: 40px auto;
   padding: 30px;
-  background:#a57f50;
-  color: #dbc49a;
+  background:#25307c;
+  color: #f9efe3;
   border-radius: 16px;
   box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.4);
   text-align: center;
@@ -535,14 +535,14 @@ body {
   font-size: 2.8em;
   font-weight: 700;
   margin-bottom: 20px;
-  color: #dbc49a;
+  color: #f9efe3;
   text-transform: uppercase;
   letter-spacing: 1.2px;
   text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.2);
 }
 
 .form-container {
-  background: #dbc49a;
+  background: #1576ba;
   padding: 25px;
   border-radius: 16px;
   margin-bottom: 20px;
@@ -559,7 +559,7 @@ label {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #a57f50;
+  color: #25307c;
   font-size: 1.3em;
   text-transform: uppercase;
   letter-spacing: 0.8px;
@@ -571,7 +571,7 @@ input {
   border-radius: 10px;
   border: none;
   background: rgba(178, 165, 159, 0.9);
-  color: #a57f50;
+  color: #25307c;
   font-size: 1.3em;
   transition: all 0.3s ease-in-out;
   box-shadow: inset 2px 2px 8px rgba(0, 0, 0, 0.2);
@@ -584,7 +584,7 @@ input:focus {
   border: 2px solid #B2A59F;
 }
 .search-button {
-  background: linear-gradient(135deg, #a57f50, #dbc49a);
+  background: linear-gradient(135deg, #25307c, #1576ba);
   color: white;
   border: none;
   padding: 12px 18px;
@@ -598,7 +598,7 @@ input:focus {
 }
 
 .search-button:hover {
-  background: linear-gradient(135deg, #dbc49a, #a57f50);
+  background: linear-gradient(135deg, #1576ba, #25307c);
   transform: scale(1.05);
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
 }
@@ -609,7 +609,7 @@ input:focus {
   left: 0;
   width: 100%;
   height: 100%;
-  background: #f5e1a4;
+  background: #f9efe3;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -617,7 +617,7 @@ input:focus {
 }
 
 .popup {
-  background:#a57f50;
+  background:#25307c;
   padding: 25px;
   border-radius: 16px;
   width: 35%;
@@ -701,8 +701,8 @@ input:focus {
 }
 
 .like-button {
-  background: linear-gradient(135deg, #a57f50, #dbc49a);
-  color: #ff4d4d;
+  background: linear-gradient(135deg, #25307c, #1576ba);
+  color: #f9efe3;
   border: none;
   padding: 4px 4px;
   border-radius: 30px;
@@ -719,13 +719,13 @@ input:focus {
 
 
 .like-button:hover {
-  background: linear-gradient(135deg, #dbc49a, #a57f50);
+  background: linear-gradient(135deg, #1576ba, #25307c);
   transform: scale(1.05);
 }
 
 
 .search-button {
-  background: linear-gradient(135deg, #a57f50, #dbc49a);
+  background: linear-gradient(135deg, #25307c, #1576ba);
   color: white;
   border: none;
   padding: 12px 18px;
@@ -739,7 +739,7 @@ input:focus {
 }
 
 .search-button:hover {
-  background: linear-gradient(135deg, #dbc49a, #a57f50);
+  background: linear-gradient(135deg, #1576ba, #25307c);
   transform: scale(1.05);
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
 }
@@ -748,7 +748,7 @@ input:focus {
   position: fixed;
   top: 20px;
   right: 20px;
-  background: linear-gradient(135deg, #a57f50, #a57f50);
+  background: linear-gradient(135deg, #25307c, #25307c);
   color: white;
   border: none;
   padding: 12px 20px;
@@ -760,7 +760,7 @@ input:focus {
 }
 
 .auth-button:hover {
-  background: linear-gradient(135deg, #a57f50, #a57f50);
+  background: linear-gradient(135deg, #25307c, #25307c);
   transform: scale(1.05);
 }
 
@@ -770,7 +770,7 @@ input:focus {
   left: 0;
   width: 100%;
   height: 100%;
-  background: #a57f50;
+  background: #25307c;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -778,7 +778,7 @@ input:focus {
 }
 
 .auth-modal-content {
-  background:#a57f50;
+  background:#25307c;
   padding: 25px;
   border-radius: 16px;
   width: 380px;
@@ -804,7 +804,7 @@ input:focus {
 .card-image {
   width: 100%;
   height: 260px;
-  background: #a57f50;
+  background: #25307c;
   border-radius: 12px;
   margin: 15px 0;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
@@ -818,7 +818,7 @@ input:focus {
 }
 
 .like-button:hover {
-  background: linear-gradient(135deg, #dbc49a, #a57f50);
+  background: linear-gradient(135deg, #1576ba, #25307c);
 }
 
 .image-container {
@@ -830,7 +830,7 @@ input:focus {
   overflow: hidden;
   border-radius: 12px;
   margin-top: 30px;
-  background: #dbc49a;
+  background: #1576ba;
   box-shadow: inset 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -847,7 +847,7 @@ input:focus {
   background: rgba(30, 100, 110, 0.9);
   border-radius: 12px;
   text-align: left;
-  color: #dbc49a;
+  color: #1576ba;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -861,7 +861,7 @@ input:focus {
 }
 
 .details-section li {
-  background: #a57f50;
+  background: #25307c;
   padding: 8px;
   border-radius: 6px;
   margin-top: 5px;
@@ -878,7 +878,7 @@ input:focus {
 }
 
 .auth-button {
-  background: linear-gradient(135deg, #a57f50, #a57f50);
+  background: linear-gradient(135deg, #25307c, #25307c);
   color: white;
   border: none;
   padding: 10px 18px;
@@ -890,7 +890,7 @@ input:focus {
 }
 
 .auth-button:hover {
-  background: linear-gradient(135deg, #a57f50, #a57f50);
+  background: linear-gradient(135deg, #25307c, #25307c);
   transform: scale(1.05);
 }
 
@@ -898,7 +898,7 @@ input:focus {
   position: absolute;
   top: 110%;
   right: 0;
-  background: #a57f50;
+  background: #25307c;
   border-radius: 12px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
   display: flex;
@@ -927,12 +927,12 @@ input:focus {
   align-items: center;
   gap: 10px;
   font-size: 1em;
-  background: #a57f50;
+  background: #25307c;
   transition: background 0.2s ease-in-out;
 }
 
 .auth-menu-item:hover {
-  background: #dbc49a;
+  background: #1576ba;
 }
 
 .auth-menu-item i {
@@ -945,7 +945,7 @@ input:focus {
   bottom: 20px;
   left: 20px;
   padding: 12px 18px;
-  background: linear-gradient(135deg, #a57f50, #dbc49a);
+  background: linear-gradient(135deg, #25307c, #1576ba);
   color: white;
   text-decoration: none;
   border-radius: 30px;
@@ -957,7 +957,7 @@ input:focus {
 }
 
 .chatbot-button:hover {
-  background: linear-gradient(135deg, #dbc49a, #a57f50);
+  background: linear-gradient(135deg, #1576ba, #25307c);
   transform: scale(1.05);
 }
 

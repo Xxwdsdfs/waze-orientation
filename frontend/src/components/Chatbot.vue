@@ -78,14 +78,14 @@
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 10px;
-    background-color: #a57f50;
+    background-color: #25307c;
   }
   
   .chat-box {
     display: flex;
     flex-direction: column;
     height: 500px;
-    background: #dbc49a;
+    background: #1576ba;
   }
   
   .chat-messages {
